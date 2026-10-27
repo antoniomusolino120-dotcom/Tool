@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff" id="theme-color">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Calcolatore</title>
+  <style>
+    :root{font-family:Arial,Helvetica,sans-serif;color-scheme:light}
+    *{box-sizing:border-box}
+    html,body{min-height:100%;margin:0}
+    body{background:#fff;color:#000;-webkit-font-smoothing:antialiased;min-width:300px}
+    body.result{background:#000;color:#fff}
+    button,input{font:inherit}
+    button{cursor:pointer}
+    button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid currentColor;outline-offset:4px}
+    [hidden]{display:none!important}
+    .app{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+    .top{height:90px;width:min(calc(100% - 48px),1050px);margin:0 auto;display:flex;align-items:center;gap:24px}
+    .home{width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #ddd;border-radius:50%;color:#000;text-decoration:none}
+    .home svg,.back svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    h1{margin:0;font-size:clamp(20px,3vw,29px);font-weight:800;letter-spacing:-.045em}
+    .stage{flex:1;display:flex;align-items:center;justify-content:center;padding:24px 24px 88px}
+    .form-wrap{width:min(100%,550px)}
+    label{display:block;font-weight:700;font-size:15px;letter-spacing:-.02em}
+    .euro-box{margin-top:12px;display:flex;align-items:center;height:84px;border:2px solid #000;border-radius:15px;padding:0 18px;gap:8px}
+    .currency{font-size:clamp(24px,5vw,38px);font-weight:800}
+    #amount{width:100%;min-width:0;border:0;outline:none;font-size:clamp(27px,6vw,42px);font-weight:800;letter-spacing:-.04em;background:transparent;color:inherit;font-variant-numeric:tabular-nums}
+    .mix{margin-top:36px}
+    .mix-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:19px}
+    .pct-box{display:flex;align-items:center;justify-content:center;gap:4px;border:1px solid #bbb;border-radius:10px;padding:7px 10px;min-width:95px;height:46px}
+    .pct-box input{border:0;outline:none;text-align:right;min-width:0;width:48px;font-size:20px;font-weight:750;background:transparent;color:#000;font-variant-numeric:tabular-nums;appearance:textfield;-moz-appearance:textfield}
+    .pct-box input::-webkit-outer-spin-button,.pct-box input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+    .pct-box span{font-size:19px;font-weight:750}
+    .range{width:100%;height:8px;border-radius:8px;margin:0;display:block;appearance:none;-webkit-appearance:none;background:linear-gradient(to right,#000 0 var(--progress,0%),#e6e6e6 var(--progress,0%) 100%);touch-action:pan-y}
+    .range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:29px;height:29px;border:7px solid #000;border-radius:50%;background:#fff}
+    .range::-moz-range-thumb{width:16px;height:16px;border:7px solid #000;border-radius:50%;background:#fff}
+    .calculate{width:100%;height:66px;border:0;border-radius:12px;background:#000;color:#fff;font-size:20px;font-weight:750;margin-top:54px;display:flex;align-items:center;justify-content:center;gap:12px}
+    .calculate svg{width:19px;height:19px;fill:none;stroke:#fff;stroke-width:2}
+    .error{font-size:13px;color:#a00;min-height:21px;margin:11px 0 0}
+    .result .top,.result .form-stage{display:none}
+    .result-stage{flex:1;position:relative;display:flex;align-items:center;justify-content:center;padding:80px 16px}
+    .big-rate{display:flex;align-items:baseline;gap:3px;white-space:nowrap;font-weight:850;letter-spacing:-.08em;line-height:1;font-variant-numeric:tabular-nums}
+    .big-rate #number{font-size:clamp(64px,16vw,174px)}
+    .big-rate .unit{font-size:clamp(44px,11vw,112px)}
+    .back{position:absolute;top:clamp(25px,5vw,50px);left:clamp(24px,6vw,80px);background:transparent;color:#fff;border:1px solid #777;border-radius:50%;width:54px;height:54px;display:flex;align-items:center;justify-content:center}
+    @media(max-width:500px){.top{height:76px}.stage{padding:18px 25px 65px;align-items:center}.euro-box{height:74px}.mix{margin-top:30px}.mix-head{margin-bottom:16px}.calculate{margin-top:45px}.big-rate #number{font-size:clamp(59px,15.1vw,85px)}.big-rate .unit{font-size:clamp(39px,10.5vw,66px)}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="top"><a class="home" href="./" aria-label="Torna alla scelta degli strumenti"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7M7 12h13"/></svg></a><h1>Calcolatore</h1></header>
+  <main class="stage form-stage" id="form-stage">
+    <div class="form-wrap">
+      <form id="calc-form" novalidate>
+        <label for="amount">Transato annuo</label>
+        <div class="euro-box"><span class="currency" aria-hidden="true">€</span><input id="amount" inputmode="decimal" autocomplete="off" value="150.000" required aria-label="Transato annuo in euro"></div>
+        <div class="mix">
+          <div class="mix-head"><label for="corp-range">Carte aziendali</label><div class="pct-box"><input id="corp-input" type="number" min="0" max="100" step=".1" value="0" inputmode="decimal" aria-label="Percentuale carte aziendali"><span>%</span></div></div>
+          <input class="range" id="corp-range" type="range" min="0" max="100" step="1" value="0" aria-label="Carte aziendali, barra percentuale">
+        </div>
+        <div class="mix">
+          <div class="mix-head"><label for="intl-range">Carte estere</label><div class="pct-box"><input id="intl-input" type="number" min="0" max="100" step=".1" value="0" inputmode="decimal" aria-label="Percentuale carte estere"><span>%</span></div></div>
+          <input class="range" id="intl-range" type="range" min="0" max="100" step="1" value="0" aria-label="Carte estere, barra percentuale">
+        </div>
+        <button class="calculate" type="submit">Calcola<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18m-7-7 7 7-7 7"/></svg></button>
+        <div class="error" id="error" role="alert" aria-live="polite"></div>
+      </form>
+    </div>
+  </main>
+  <main class="result-stage" id="result-stage" hidden aria-label="Tasso calcolato">
+    <button class="back" type="button" id="back" aria-label="Torna ai dati"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7M7 12h13"/></svg></button>
+    <div class="big-rate" aria-live="polite"><span id="number">1,34</span><span class="unit">%</span></div>
+  </main>
+</div>
+<script>
+(function(){
+  'use strict';
+  var points=[[48000,1.49],[72000,1.44],[100000,1.39],[150000,1.34],[200000,1.29],[250000,1.24],[300000,1.19],[400000,1.14],[500000,1.09],[600000,1.04],[700000,.99],[800000,.94],[900000,.89],[1000000,.84],[1100000,.79],[1200000,.74],[1300000,.69],[1400000,.64],[1500000,.59]];
+  var share={corp:0,intl:0};
+  var $=function(id){return document.getElementById(id)};
+  var fmt=new Intl.NumberFormat('it-IT',{minimumFractionDigits:2,maximumFractionDigits:4});
+  var euros=new Intl.NumberFormat('it-IT',{maximumFractionDigits:2});
+  function parseEuro(raw){
+    var str=String(raw).replace(/[^0-9.,]/g,'');
+    if(!str)return NaN;
+    if(str.includes(','))str=str.replace(/\./g,'').replace(',','.');
+    else if(!/^\d+\.\d{1,2}$/.test(str))str=str.replace(/\./g,'');
+    return Number(str);
+  }
+  function base(tpv){
+    for(var i=1;i<points.length;i++){
+      if(tpv<=points[i][0]){
+        var lo=points[i-1],hi=points[i];
+        return lo[1]+(hi[1]-lo[1])*(tpv-lo[0])/(hi[0]-lo[0]);
+      }
+    }
+    return points[points.length-1][1];
+  }
+  function showForm(){
+    document.body.classList.remove('result');
+    $('form-stage').hidden=false;$('result-stage').hidden=true;
+    $('theme-color').content='#ffffff';window.scrollTo(0,0);
+  }
+  function showResult(){
+    document.body.classList.add('result');
+    $('form-stage').hidden=true;$('result-stage').hidden=false;
+    $('theme-color').content='#000000';window.scrollTo(0,0);
+  }
+  function sync(){
+    ['corp','intl'].forEach(function(key){
+      var v=share[key],slider=$(key+'-range');
+      $(key+'-input').value=v;
+      slider.value=v;slider.style.setProperty('--progress',v+'%');
+    });
+  }
+  function change(key,raw){
+    var v=Number(String(raw).replace(',','.'));
+    share[key]=Math.max(0,Math.min(100,Number.isFinite(v)?Math.round(v*10)/10:0));
+    var other=key==='corp'?'intl':'corp';
+    if(share.corp+share.intl>100)share[other]=Math.round((100-share[key])*10)/10;
+    sync();
+  }
+  ['corp','intl'].forEach(function(key){
+    $(key+'-range').addEventListener('input',function(e){change(key,e.target.value)});
+    $(key+'-input').addEventListener('input',function(e){change(key,e.target.value)});
+  });
+  $('calc-form').addEventListener('submit',function(e){
+    e.preventDefault();
+    var tpv=parseEuro($('amount').value);
+    if(!Number.isFinite(tpv)||tpv<48000||tpv>1500000){
+      $('error').textContent='Inserisci un transato tra 48.000 € e 1.500.000 €.';
+      $('amount').focus();return;
+    }
+    $('error').textContent='';
+    $('amount').value=euros.format(tpv);
+    $('number').textContent=fmt.format(base(tpv)+.5*(share.corp+share.intl)/100);
+    showResult();
+    if(history.pushState)history.pushState({result:true},'','#risultato');
+  });
+  $('back').addEventListener('click',function(){
+    if(location.hash==='#risultato')history.back();
+    else showForm();
+  });
+  addEventListener('popstate',function(){if(location.hash==='#risultato')showResult();else showForm()});
+  if(location.hash==='#risultato')history.replaceState({},'',location.pathname+location.search);
+  sync();
+})();
+</script>
+</body>
+</html>
