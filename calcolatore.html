@@ -18,6 +18,9 @@
     [hidden]{display:none!important}
     .app{position:fixed;inset:0;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
     .top{flex-shrink:0;height:90px;width:min(calc(100% - 48px),1050px);margin:0 auto;display:flex;align-items:center;gap:24px}
+    .pricing-indicator{position:fixed;top:calc(16px + env(safe-area-inset-top));right:calc(18px + env(safe-area-inset-right));width:6px;height:6px;border-radius:50%;background:#34c759;pointer-events:none}
+    .pricing-indicator[data-level="10"]{background:#ffcc00}
+    .pricing-indicator[data-level="20"]{background:#ff453a}
     .home{width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #ddd;border-radius:50%;color:#000;text-decoration:none}
     .home svg,.back svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
     h1{margin:0;font-size:clamp(20px,3vw,29px);font-weight:800;letter-spacing:-.045em}
@@ -43,7 +46,10 @@
     .range::-moz-range-thumb{width:16px;height:16px;border:7px solid #000;border-radius:50%;background:#fff}
     .calculate{width:100%;height:66px;border:0;border-radius:12px;background:#000;color:#fff;font-size:20px;font-weight:750;margin-top:54px;display:flex;align-items:center;justify-content:center;gap:12px}
     .calculate svg{width:19px;height:19px;fill:none;stroke:#fff;stroke-width:2}
-    .error{font-size:13px;color:#a00;min-height:21px;margin:11px 0 0}
+    .pricing-selection{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));height:28px;width:100%}
+    .pricing-selection button{appearance:none;display:block;border:0;background:transparent;color:transparent;padding:0;min-width:0;height:100%;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+    .pricing-selection button:focus-visible{outline:2px solid #888;outline-offset:-2px}
+    .error{font-size:13px;color:#a00;min-height:21px;margin:4px 0 0}
     .result .top,.result .form-stage,.loading .top,.loading .form-stage{display:none}
     body.loading{background:#000;color:#fff}
     .loading-stage{position:fixed;inset:0;display:grid;place-items:center;background:#000;z-index:20}
@@ -68,6 +74,7 @@
     @media(max-width:500px){.top{height:70px}.stage{padding:12px 25px 30px}.euro-box{height:70px}.mix{margin-top:22px}.mix-head{margin-bottom:14px}.calculate{margin-top:30px}.result-stage{padding:95px 24px 45px}.big-rate{margin:26px 0 37px}.big-rate #number{font-size:clamp(59px,15.1vw,85px)}.big-rate .unit{font-size:clamp(39px,10.5vw,66px)}.exception{padding-top:28px}.exception-text{margin-top:15px}.loading-content{gap:27px}}
     @media(max-height:700px){.top{height:58px}.stage{padding-top:8px;padding-bottom:10px}.euro-box{height:60px;margin-top:8px}.mix{margin-top:16px}.mix-head{margin-bottom:10px}.calculate{height:54px;margin-top:22px}.period-switch button{min-height:32px;padding:7px 10px}.result-stage{padding-top:80px;padding-bottom:20px}.big-rate{margin-top:20px;margin-bottom:25px}.exception{padding-top:18px}}
     @media(max-height:540px){.stage{padding:4px 16px}.form-wrap{margin:auto}.amount-info{margin-top:4px;min-height:16px}.period-switch button{padding:5px 9px;min-height:30px}.euro-box{height:52px;margin-top:6px}.mix{margin-top:10px}.mix-head{margin-bottom:7px}.calculate{margin-top:10px;height:46px}.error{min-height:17px;margin:4px 0 0}.result-stage{padding:65px 16px 10px}.big-rate{margin:10px 0 14px}.big-rate #number{font-size:clamp(52px,12vw,80px)}.big-rate .unit{font-size:clamp(30px,8vw,56px)}.exception{padding-top:12px}.exception-text{margin:7px auto 0;line-height:1.35;font-size:13px}.back{top:12px;left:16px;width:42px;height:42px}}
+    @media(max-height:540px){.pricing-selection{height:20px}}
     @media(prefers-reduced-motion:reduce){.loading-message{transition:none}}
   </style>
 
@@ -79,7 +86,7 @@
 </head>
 <body>
 <div class="app">
-  <header class="top"><a class="home" href="./" aria-label="Torna alla scelta degli strumenti"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7M7 12h13"/></svg></a><h1>Calcolatore</h1></header>
+  <header class="top"><a class="home" href="./" aria-label="Torna alla scelta degli strumenti"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7M7 12h13"/></svg></a><h1>Calcolatore</h1><span class="pricing-indicator" id="pricing-indicator" data-level="0" role="status" aria-label="Tariffa selezionata: base"></span></header>
   <main class="stage form-stage" id="form-stage">
     <div class="form-wrap">
       <form id="calc-form" novalidate>
@@ -101,6 +108,11 @@
           <input class="range" id="intl-range" type="range" min="0" max="100" step="1" value="0" aria-label="Carte estere, barra percentuale">
         </div>
         <button class="calculate" type="submit">Calcola<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18m-7-7 7 7-7 7"/></svg></button>
+        <div class="pricing-selection" role="group" aria-label="Modalità della proposta commerciale">
+          <button type="button" data-pricing="20" aria-label="Proposta maggiorata del 20 percento" aria-pressed="false"></button>
+          <button type="button" data-pricing="10" aria-label="Proposta maggiorata del 10 percento" aria-pressed="false"></button>
+          <button type="button" data-pricing="0" aria-label="Proposta base" aria-pressed="true"></button>
+        </div>
         <div class="error" id="error" role="alert" aria-live="polite"></div>
       </form>
     </div>
@@ -132,6 +144,7 @@
   var points=[[48000,1.44],[80000,1.20],[100000,1.09],[150000,.94],[200000,.90],[216000,.89],[250000,.87],[300000,.84],[350000,.81],[400000,.79],[450000,.77],[500000,.75]];
   var share={corp:0,intl:0};
   var period='annual';
+  var pricingLevel=0;
   var LOADING_MS=15000;
   var loadingMessages=['Stiamo calcolando il tuo tasso…','Analizziamo il tuo transato annuo…','Valutiamo la composizione delle carte…','Stiamo preparando la tua offerta…'];
   var messageTimers=[];
@@ -171,6 +184,15 @@
     $('amount').setAttribute('aria-label',period==='monthly'?'Transato mensile in euro':'Transato annuo in euro');
     $('error').textContent='';
     updateAnnualEquivalent();
+  }
+  function selectPricing(level){
+    if(level!==0&&level!==10&&level!==20)return;
+    pricingLevel=level;
+    document.querySelectorAll('[data-pricing]').forEach(function(button){
+      button.setAttribute('aria-pressed',String(Number(button.dataset.pricing)===level));
+    });
+    $('pricing-indicator').dataset.level=String(level);
+    $('pricing-indicator').setAttribute('aria-label',level===0?'Tariffa selezionata: base':'Tariffa selezionata: maggiorazione '+level+' percento');
   }
   function base(tpv){
     // Interpolazione logaritmica: ogni variazione percentuale del TPV produce
@@ -262,6 +284,9 @@
   $('period-monthly').addEventListener('click',function(){setPeriod('monthly');});
   $('period-annual').addEventListener('click',function(){setPeriod('annual');});
   $('amount').addEventListener('input',updateAnnualEquivalent);
+  document.querySelectorAll('[data-pricing]').forEach(function(button){
+    button.addEventListener('click',function(){selectPricing(Number(button.dataset.pricing));});
+  });
   $('calc-form').addEventListener('submit',function(e){
     e.preventDefault();
     var entered=parseEuro($('amount').value);
@@ -277,12 +302,16 @@
     updateAnnualEquivalent();
     if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();
     var requiresCustomOffer=tpv>500000;
-    $('offer-title').textContent=requiresCustomOffer?'TASSO DI RIFERIMENTO PER 500.000 € ANNUI':'LA TUA OFFERTA';
+    $('offer-title').textContent=requiresCustomOffer
+      ?(pricingLevel===0?'TASSO DI RIFERIMENTO PER 500.000 € ANNUI':'PROPOSTA BASATA SU 500.000 € ANNUI')
+      :'LA TUA OFFERTA';
     $('exception-heading').textContent=requiresCustomOffer?'Proposta su misura':'Condizioni straordinarie';
     $('exception-description').textContent=requiresCustomOffer
       ?'Per ottenere un tasso personalizzato sul tuo transato è necessario l’intervento del responsabile commerciale.'
       :'L’eventuale applicazione di un tasso inferiore è subordinata all’approvazione del responsabile commerciale.';
-    $('number').textContent=fmt.format(floorRate(base(Math.min(tpv,500000))+.5*(share.corp+share.intl)/100));
+    var referenceRate=base(Math.min(tpv,500000))+.5*(share.corp+share.intl)/100;
+    var offeredRate=referenceRate*(1+pricingLevel/100);
+    $('number').textContent=fmt.format(floorRate(offeredRate));
     if(history.pushState)history.pushState({result:true},'','#risultato');
     startLoading();
   });
