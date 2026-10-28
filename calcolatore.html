@@ -42,16 +42,26 @@
     .result .top,.result .form-stage,.loading .top,.loading .form-stage{display:none}
     body.loading{background:#000;color:#fff}
     .loading-stage{position:fixed;inset:0;display:grid;place-items:center;background:#000;z-index:20}
-    .loading-center{width:72px;height:72px;display:grid;place-items:center}
+    .loading-content{width:min(100%,560px);padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;transform:translateY(-8px)}
+    .loading-center{width:72px;height:72px;display:grid;place-items:center;flex-shrink:0}
+    .loading-message{font-weight:600;font-size:clamp(16px,3vw,20px);letter-spacing:-.02em;line-height:1.5;text-align:center;color:#fff;min-height:3em;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity 180ms ease}
+    .loading-message.is-changing{opacity:0}
     .loading-spinner{width:58px;height:58px;display:block;border:4px solid rgba(255,255,255,.22);border-top-color:#fff;border-radius:50%;animation:spin 0.85s linear infinite;transform-origin:center}
     @keyframes spin{to{transform:rotate(360deg)}}
     @media(prefers-reduced-motion:reduce){.loading-spinner{animation-duration:2s}}
-    .result-stage{flex:1;position:relative;display:flex;align-items:center;justify-content:center;padding:80px 16px}
-    .big-rate{display:flex;align-items:baseline;gap:3px;white-space:nowrap;font-weight:850;letter-spacing:-.08em;line-height:1;font-variant-numeric:tabular-nums}
+    .result-stage{flex:1;position:relative;display:flex;align-items:center;justify-content:center;padding:96px 24px 72px}
+    .result-content{width:min(100%,640px);display:flex;flex-direction:column;align-items:center;text-align:center}
+    .offer-title{color:#fff;font-size:clamp(13px,2.7vw,16px);font-weight:700;letter-spacing:.1em;line-height:1.3}
+    .big-rate{display:flex;align-items:baseline;gap:3px;white-space:nowrap;font-weight:850;letter-spacing:-.08em;line-height:1;font-variant-numeric:tabular-nums;margin:27px 0 42px}
     .big-rate #number{font-size:clamp(64px,16vw,174px)}
     .big-rate .unit{font-size:clamp(44px,11vw,112px)}
+    .exception{border-top:1px solid #4d4d4d;padding-top:34px;width:min(100%,530px)}
+    .exception-title{display:flex;align-items:center;justify-content:center;gap:11px;color:#fff;font-size:clamp(18px,3vw,21px);font-weight:750;letter-spacing:-.025em}
+    .exception-icon{width:25px;height:25px;flex:none;stroke:#fff;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+    .exception-text{max-width:480px;margin:18px auto 0;font-size:clamp(14px,2.3vw,16px);line-height:1.6;color:#bdbdbd}
     .back{position:absolute;top:clamp(25px,5vw,50px);left:clamp(24px,6vw,80px);background:transparent;color:#fff;border:1px solid #777;border-radius:50%;width:54px;height:54px;display:flex;align-items:center;justify-content:center}
-    @media(max-width:500px){.top{height:76px}.stage{padding:18px 25px 65px;align-items:center}.euro-box{height:74px}.mix{margin-top:30px}.mix-head{margin-bottom:16px}.calculate{margin-top:45px}.big-rate #number{font-size:clamp(59px,15.1vw,85px)}.big-rate .unit{font-size:clamp(39px,10.5vw,66px)}}
+    @media(max-width:500px){.top{height:76px}.stage{padding:18px 25px 65px;align-items:center}.euro-box{height:74px}.mix{margin-top:30px}.mix-head{margin-bottom:16px}.calculate{margin-top:45px}.result-stage{padding:95px 24px 45px}.big-rate{margin:26px 0 37px}.big-rate #number{font-size:clamp(59px,15.1vw,85px)}.big-rate .unit{font-size:clamp(39px,10.5vw,66px)}.exception{padding-top:28px}.exception-text{margin-top:15px}.loading-content{gap:27px}}
+    @media(prefers-reduced-motion:reduce){.loading-message{transition:none}}
   </style>
 
   <link rel="manifest" href="/manifest.webmanifest">
@@ -82,11 +92,24 @@
     </div>
   </main>
   <div class="loading-stage" id="loading-stage" hidden role="status" aria-label="Calcolo in corso">
-    <div class="loading-center"><span class="loading-spinner" aria-hidden="true"></span></div>
+    <div class="loading-content">
+      <div class="loading-center"><span class="loading-spinner" aria-hidden="true"></span></div>
+      <div class="loading-message" id="loading-message" aria-live="off">Stiamo calcolando il tuo tasso…</div>
+    </div>
   </div>
   <main class="result-stage" id="result-stage" hidden aria-label="Tasso calcolato">
     <button class="back" type="button" id="back" aria-label="Torna ai dati"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7M7 12h13"/></svg></button>
-    <div class="big-rate" aria-live="polite"><span id="number">1,34</span><span class="unit">%</span></div>
+    <div class="result-content">
+      <div class="offer-title">LA TUA OFFERTA</div>
+      <div class="big-rate" aria-live="polite"><span id="number">1,34</span><span class="unit">%</span></div>
+      <section class="exception" aria-label="Eccezione commerciale">
+        <div class="exception-title">
+          <svg class="exception-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20 6v5.4c0 4.9-3.3 8.2-8 10.1-4.7-1.9-8-5.2-8-10.1V6l8-3.5Z"/><path d="m8.7 12 2.4 2.4 4.5-4.8"/></svg>
+          <span>Eccezione commerciale</span>
+        </div>
+        <p class="exception-text">Eventuali condizioni migliorative fuori dalla proposta richiedono l’autorizzazione del responsabile commerciale.</p>
+      </section>
+    </div>
   </main>
 </div>
 <script>
@@ -94,7 +117,9 @@
   'use strict';
   var points=[[48000,1.49],[72000,1.44],[100000,1.39],[150000,1.34],[200000,1.29],[250000,1.24],[300000,1.19],[400000,1.14],[500000,1.09],[600000,1.04],[700000,.99],[800000,.94],[900000,.89],[1000000,.84],[1100000,.79],[1200000,.74],[1300000,.69],[1400000,.64],[1500000,.59]];
   var share={corp:0,intl:0};
-  var LOADING_MS=30000;
+  var LOADING_MS=15000;
+  var loadingMessages=['Stiamo calcolando il tuo tasso…','Analizziamo il tuo transato annuo…','Valutiamo la composizione delle carte…','Stiamo preparando la tua offerta…'];
+  var messageTimers=[];
   var loadTimer=null;
   var loadingStarted=0;
   var loadingRun=0;
@@ -120,8 +145,22 @@
   function cancelLoading(){
     loadingRun++;
     if(loadTimer!==null){clearTimeout(loadTimer);loadTimer=null;}
+    messageTimers.forEach(function(t){clearTimeout(t);});
+    messageTimers=[];
+    $('loading-message').classList.remove('is-changing');
     loadingStarted=0;
     $('loading-stage').hidden=true;
+  }
+  function updateLoadingMessage(run,index){
+    if(run!==loadingRun||!document.body.classList.contains('loading'))return;
+    var el=$('loading-message');
+    el.classList.add('is-changing');
+    var next=setTimeout(function(){
+      if(run!==loadingRun||!document.body.classList.contains('loading'))return;
+      el.textContent=loadingMessages[index];
+      el.classList.remove('is-changing');
+    },180);
+    messageTimers.push(next);
   }
   function showForm(){
     cancelLoading();
@@ -150,9 +189,14 @@
     $('form-stage').hidden=true;
     $('result-stage').hidden=true;
     $('loading-stage').hidden=false;
+    $('loading-message').classList.remove('is-changing');
+    $('loading-message').textContent=loadingMessages[0];
     $('theme-color').content='#000000';
     window.scrollTo(0,0);
     var run=loadingRun;
+    for(var i=1;i<loadingMessages.length;i++){
+      (function(index){messageTimers.push(setTimeout(function(){updateLoadingMessage(run,index);},index*LOADING_MS/loadingMessages.length));})(i);
+    }
     loadTimer=setTimeout(function(){finishLoading(run);},LOADING_MS);
   }
   function sync(){
@@ -196,7 +240,15 @@
     }else showForm();
   });
   document.addEventListener('visibilitychange',function(){
-    if(!document.hidden&&document.body.classList.contains('loading'))finishLoading(loadingRun);
+    if(!document.hidden&&document.body.classList.contains('loading')){
+      finishLoading(loadingRun);
+      if(document.body.classList.contains('loading')){
+        var index=Math.min(loadingMessages.length-1,Math.floor((Date.now()-loadingStarted)/(LOADING_MS/loadingMessages.length)));
+        var el=$('loading-message');
+        el.classList.remove('is-changing');
+        el.textContent=loadingMessages[index];
+      }
+    }
   });
   if(location.hash==='#risultato')history.replaceState({},'',location.pathname+location.search);
   sync();
