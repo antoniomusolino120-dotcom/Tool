@@ -115,7 +115,7 @@
 <script>
 (function(){
   'use strict';
-  var points=[[48000,1.49],[72000,1.44],[100000,1.39],[150000,1.34],[200000,1.29],[250000,1.24],[300000,1.19],[400000,1.14],[500000,1.09],[600000,1.04],[700000,.99],[800000,.94],[900000,.89],[1000000,.84],[1100000,.79],[1200000,.74],[1300000,.69],[1400000,.64],[1500000,.59]];
+  var points=[[48000,1.44],[80000,1.20],[100000,1.09],[150000,.94],[200000,.90],[216000,.89],[250000,.87],[300000,.84],[350000,.81],[400000,.79],[450000,.77],[500000,.75],[1500000,.59]];
   var share={corp:0,intl:0};
   var LOADING_MS=15000;
   var loadingMessages=['Stiamo calcolando il tuo tasso…','Analizziamo il tuo transato annuo…','Valutiamo la composizione delle carte…','Stiamo preparando la tua offerta…'];
@@ -134,10 +134,13 @@
     return Number(str);
   }
   function base(tpv){
+    // Interpolazione logaritmica: ogni variazione percentuale del TPV produce
+    // un adeguamento continuo del tasso, senza scaglioni o salti.
+    if(tpv<=points[0][0])return points[0][1];
     for(var i=1;i<points.length;i++){
       if(tpv<=points[i][0]){
         var lo=points[i-1],hi=points[i];
-        return lo[1]+(hi[1]-lo[1])*(tpv-lo[0])/(hi[0]-lo[0]);
+        return lo[1]+(hi[1]-lo[1])*Math.log(tpv/lo[0])/Math.log(hi[0]/lo[0]);
       }
     }
     return points[points.length-1][1];
