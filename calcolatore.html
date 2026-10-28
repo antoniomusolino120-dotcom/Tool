@@ -47,6 +47,12 @@
     .back{position:absolute;top:clamp(25px,5vw,50px);left:clamp(24px,6vw,80px);background:transparent;color:#fff;border:1px solid #777;border-radius:50%;width:54px;height:54px;display:flex;align-items:center;justify-content:center}
     @media(max-width:500px){.top{height:76px}.stage{padding:18px 25px 65px;align-items:center}.euro-box{height:74px}.mix{margin-top:30px}.mix-head{margin-bottom:16px}.calculate{margin-top:45px}.big-rate #number{font-size:clamp(59px,15.1vw,85px)}.big-rate .unit{font-size:clamp(39px,10.5vw,66px)}}
   </style>
+
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
 </head>
 <body>
 <div class="app">
@@ -147,6 +153,14 @@
   if(location.hash==='#risultato')history.replaceState({},'',location.pathname+location.search);
   sync();
 })();
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').catch(function () {});
+    });
+  }
 </script>
 </body>
 </html>
