@@ -151,9 +151,34 @@ document.addEventListener('click',function(e){
  }
  showPage(Number(btn.dataset.tab!==undefined?btn.dataset.tab:btn.dataset.goto));
 });
+// Il primo tasso immesso in un gruppo vuoto viene replicato sulle altre carte.
+// La replica resta attiva durante la digitazione; dopo, ogni aliquota può essere
+// personalizzata separatamente senza modificare l'altra offerta.
+var initialRateInput=null;
+document.addEventListener('focusout',function(e){
+ if(e.target===initialRateInput)initialRateInput=null;
+});
 document.addEventListener('input',function(e){var t=e.target;
  if(t.dataset.share){distribution(t.dataset.share,Number(t.value));render();return}
- if(t.dataset.field){var root=t.closest('.page'),i=Number(root.id.slice(-1)),k=t.dataset.field,v=num(t.value);if(k==='volume'||k==='transactions'){shared[k]=v;if(k==='transactions')shared[k]=Math.round(v)}else{configs[i][k]=v}render()}
+ if(t.dataset.field){
+  var root=t.closest('.page'),i=Number(root.id.slice(-1)),k=t.dataset.field,v=num(t.value);
+  if(k==='volume'||k==='transactions'){
+   shared[k]=k==='transactions'?Math.round(v):v;
+  }else if(cards.indexOf(k)!==-1 && configs[i].commissionMode==='pct'){
+   var c=configs[i];
+   if(initialRateInput!==t && cards.every(function(other){return other===k||c[other]===0})){
+    initialRateInput=t;
+   }
+   if(initialRateInput===t){
+    cards.forEach(function(other){c[other]=v});
+   }else{
+    c[k]=v;
+   }
+  }else{
+   configs[i][k]=v;
+  }
+  render();
+ }
 });
 document.addEventListener('change',function(e){if(e.target.dataset.share){distribution(e.target.dataset.share,Number(e.target.value));render()}});
 render();
