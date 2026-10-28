@@ -1,5 +1,5 @@
 /* Offline support for the standalone calculator and comparison. */
-const CACHE_NAME = 'confronto-pwa-v14';
+const CACHE_NAME = 'confronto-pwa-v15';
 const ASSETS = [
   '/',
   '/index.html',
