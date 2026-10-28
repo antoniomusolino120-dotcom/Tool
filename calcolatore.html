@@ -46,10 +46,10 @@
     .range::-moz-range-thumb{width:16px;height:16px;border:7px solid #000;border-radius:50%;background:#fff}
     .calculate{width:100%;height:66px;border:0;border-radius:12px;background:#000;color:#fff;font-size:20px;font-weight:750;margin-top:54px;display:flex;align-items:center;justify-content:center;gap:12px}
     .calculate svg{width:19px;height:19px;fill:none;stroke:#fff;stroke-width:2}
-    .pricing-selection{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));height:28px;width:100%}
-    .pricing-selection button{appearance:none;display:block;border:0;background:transparent;color:transparent;padding:0;min-width:0;height:100%;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+    .pricing-selection{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));height:0;width:100%;overflow:visible}
+    .pricing-selection button{appearance:none;display:block;border:0;background:transparent;color:transparent;padding:0;min-width:0;height:28px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
     .pricing-selection button:focus-visible{outline:2px solid #888;outline-offset:-2px}
-    .error{font-size:13px;color:#a00;min-height:21px;margin:4px 0 0}
+    .error{font-size:13px;color:#a00;min-height:21px;margin:11px 0 0}
     .result .top,.result .form-stage,.loading .top,.loading .form-stage{display:none}
     body.loading{background:#000;color:#fff}
     .loading-stage{position:fixed;inset:0;display:grid;place-items:center;background:#000;z-index:20}
@@ -74,7 +74,7 @@
     @media(max-width:500px){.top{height:70px}.stage{padding:12px 25px 30px}.euro-box{height:70px}.mix{margin-top:22px}.mix-head{margin-bottom:14px}.calculate{margin-top:30px}.result-stage{padding:95px 24px 45px}.big-rate{margin:26px 0 37px}.big-rate #number{font-size:clamp(59px,15.1vw,85px)}.big-rate .unit{font-size:clamp(39px,10.5vw,66px)}.exception{padding-top:28px}.exception-text{margin-top:15px}.loading-content{gap:27px}}
     @media(max-height:700px){.top{height:58px}.stage{padding-top:8px;padding-bottom:10px}.euro-box{height:60px;margin-top:8px}.mix{margin-top:16px}.mix-head{margin-bottom:10px}.calculate{height:54px;margin-top:22px}.period-switch button{min-height:32px;padding:7px 10px}.result-stage{padding-top:80px;padding-bottom:20px}.big-rate{margin-top:20px;margin-bottom:25px}.exception{padding-top:18px}}
     @media(max-height:540px){.stage{padding:4px 16px}.form-wrap{margin:auto}.amount-info{margin-top:4px;min-height:16px}.period-switch button{padding:5px 9px;min-height:30px}.euro-box{height:52px;margin-top:6px}.mix{margin-top:10px}.mix-head{margin-bottom:7px}.calculate{margin-top:10px;height:46px}.error{min-height:17px;margin:4px 0 0}.result-stage{padding:65px 16px 10px}.big-rate{margin:10px 0 14px}.big-rate #number{font-size:clamp(52px,12vw,80px)}.big-rate .unit{font-size:clamp(30px,8vw,56px)}.exception{padding-top:12px}.exception-text{margin:7px auto 0;line-height:1.35;font-size:13px}.back{top:12px;left:16px;width:42px;height:42px}}
-    @media(max-height:540px){.pricing-selection{height:20px}}
+    @media(max-height:540px){.pricing-selection button{height:20px}}
     @media(prefers-reduced-motion:reduce){.loading-message{transition:none}}
   </style>
 
