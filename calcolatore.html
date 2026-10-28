@@ -16,7 +16,7 @@
     button{cursor:pointer}
     button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid currentColor;outline-offset:4px}
     [hidden]{display:none!important}
-    .app{position:fixed;inset:0;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+    .app{position:fixed;inset:0;height:100vh;height:100dvh;height:var(--app-height,100dvh);display:flex;flex-direction:column;overflow:hidden}
     .top{flex-shrink:0;height:90px;width:min(calc(100% - 48px),1050px);margin:0 auto;display:flex;align-items:center;gap:24px}
     .pricing-indicator{position:absolute;z-index:6;top:calc(16px + env(safe-area-inset-top));right:calc(18px + env(safe-area-inset-right));width:6px;height:6px;border-radius:50%;background:#34c759;pointer-events:none}
     .pricing-indicator[data-level="10"]{background:#ffcc00}
@@ -186,15 +186,29 @@
     updateAnnualEquivalent();
   }
   function updatePricingZone(){
-    // The three transparent columns fill the entire screen below Calcola.
-    // Their upper edge follows the button when viewport dimensions change.
+    // Keep the transparent zones anchored to the real Calcola button.
     var button=document.querySelector('#calc-form .calculate');
     var zone=$('pricing-selection');
     var app=document.querySelector('.app');
     if(!button||!zone||!app||$('form-stage').hidden)return;
-    // Relative coordinates avoid mixing iOS Safari's layout and visual viewports.
     var top=button.getBoundingClientRect().bottom-app.getBoundingClientRect().top;
     zone.style.top=Math.max(0,Math.min(app.clientHeight,top))+'px';
+  }
+  function refreshViewport(){
+    // iOS browsers can restore stale dvh/fixed-element geometry after reload.
+    // Re-measure the visible viewport and then reposition the touch zones.
+    var viewport=window.visualViewport;
+    var height=viewport && viewport.height>0?viewport.height:window.innerHeight;
+    if(Number.isFinite(height)&&height>0){
+      document.querySelector('.app').style.setProperty('--app-height',height+'px');
+    }
+    updatePricingZone();
+  }
+  function scheduleViewportRefresh(){
+    refreshViewport();
+    requestAnimationFrame(refreshViewport);
+    setTimeout(refreshViewport,150);
+    setTimeout(refreshViewport,500);
   }
   function selectPricing(level){
     if(level!==0&&level!==10&&level!==20)return;
@@ -349,9 +363,18 @@
   });
   if(location.hash==='#risultato')history.replaceState({},'',location.pathname+location.search);
   sync();
-  updatePricingZone();
-  window.addEventListener('resize',updatePricingZone);
-  if(window.visualViewport)window.visualViewport.addEventListener('resize',updatePricingZone);
+  scheduleViewportRefresh();
+  window.addEventListener('load',scheduleViewportRefresh);
+  window.addEventListener('pageshow',scheduleViewportRefresh);
+  window.addEventListener('resize',refreshViewport);
+  window.addEventListener('orientationchange',scheduleViewportRefresh);
+  document.addEventListener('visibilitychange',function(){
+    if(!document.hidden)scheduleViewportRefresh();
+  });
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',refreshViewport);
+    window.visualViewport.addEventListener('scroll',refreshViewport);
+  }
 })();
 </script>
 

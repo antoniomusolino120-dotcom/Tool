@@ -1,5 +1,5 @@
 /* Offline support for the standalone calculator and comparison. */
-const CACHE_NAME = 'confronto-pwa-v15';
+const CACHE_NAME = 'confronto-pwa-v16';
 const ASSETS = [
   '/',
   '/index.html',
@@ -35,7 +35,7 @@ self.addEventListener('fetch', (event) => {
 
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request)
+      fetch(event.request, {cache: 'no-store'})
         .then(response => {
           if (response.ok) {
             const copy = response.clone();
