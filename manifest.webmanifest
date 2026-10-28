@@ -1,7 +1,7 @@
 {
-  "name": "Confronto e Calcolatore",
-  "short_name": "Confronto",
-  "description": "Confronto POS e calcolatore del tasso",
+  "name": "Tool",
+  "short_name": "Tool",
+  "description": "Strumenti di confronto e calcolo dei tassi",
   "id": "/",
   "start_url": "/",
   "scope": "/",
