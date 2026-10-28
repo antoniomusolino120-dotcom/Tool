@@ -139,7 +139,12 @@
   var loadingStarted=0;
   var loadingRun=0;
   var $=function(id){return document.getElementById(id)};
-  var fmt=new Intl.NumberFormat('it-IT',{minimumFractionDigits:2,maximumFractionDigits:4});
+  var fmt=new Intl.NumberFormat('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
+  function floorRate(rate){
+    // Tronca al centesimo di punto percentuale, correggendo solo
+    // i minimi errori binari dei valori esatti.
+    return Math.floor(rate*100+1e-12)/100;
+  }
   var euros=new Intl.NumberFormat('it-IT',{maximumFractionDigits:2});
   function parseEuro(raw){
     var str=String(raw).replace(/[^0-9.,]/g,'');
@@ -277,7 +282,7 @@
     $('exception-description').textContent=requiresCustomOffer
       ?'Per ottenere un tasso personalizzato sul tuo transato è necessario l’intervento del responsabile commerciale.'
       :'L’eventuale applicazione di un tasso inferiore è subordinata all’approvazione del responsabile commerciale.';
-    $('number').textContent=fmt.format(base(Math.min(tpv,500000))+.5*(share.corp+share.intl)/100);
+    $('number').textContent=fmt.format(floorRate(base(Math.min(tpv,500000))+.5*(share.corp+share.intl)/100));
     if(history.pushState)history.pushState({result:true},'','#risultato');
     startLoading();
   });
