@@ -21,6 +21,7 @@
     .pricing-indicator{position:absolute;z-index:6;top:calc(16px + env(safe-area-inset-top));right:calc(18px + env(safe-area-inset-right));width:6px;height:6px;border-radius:50%;background:#34c759;pointer-events:none}
     .pricing-indicator[data-level="10"]{background:#ffcc00}
     .pricing-indicator[data-level="20"]{background:#ff453a}
+    .cassa-page .pricing-indicator.accessory-promo-on{box-shadow:0 0 0 1px #3978c6}
     .home{width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #ddd;border-radius:50%;color:#000;text-decoration:none}
     .home svg,.back svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
     h1{margin:0;font-size:clamp(20px,3vw,29px);font-weight:800;letter-spacing:-.045em}
@@ -102,8 +103,10 @@
     .cassa-page .extra-qty .trash{border-color:#e3e3e3;margin-left:5px}
     .cassa-page .error{margin-top:18px}
     .cassa-page .calculate{margin-top:10px;margin-bottom:0;flex:none}
-    .cassa-page .pricing-selection{position:relative;inset:auto!important;flex:1 0 180px;min-height:180px;width:100%;z-index:5;pointer-events:none;overflow:visible}
-    .cassa-page .pricing-selection button{pointer-events:auto;min-height:180px}
+    .cassa-page .pricing-selection{position:relative;inset:auto!important;display:flex;flex-direction:column;flex:1 0 180px;min-height:180px;width:100%;z-index:5;pointer-events:none;overflow:visible}
+    .cassa-page .pricing-tiers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));flex:1 1 50%;min-height:90px}
+    .cassa-page .pricing-tiers button{pointer-events:auto;height:100%;min-height:0}
+    .cassa-page .accessory-promo-zone{display:block;flex:1 1 50%;width:100%;min-height:90px;height:auto;pointer-events:auto}
     .cassa-page .result-stage{display:block;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:82px 22px 56px}
     .cassa-page .result-content{align-items:stretch;text-align:left;width:min(100%,580px);margin:0 auto}
     .cassa-page .summary-card{border-top:1px solid #555;border-bottom:1px solid #555;padding:22px 0 16px}
@@ -117,6 +120,12 @@
     .cassa-page .extras-title{margin-top:23px}
     .cassa-page .summary-extra{padding:7px 0}
     .cassa-page .summary-extra span{min-width:0}
+    .cassa-page .summary-extra-amount{display:flex;flex-direction:column;align-items:flex-end;gap:3px;text-align:right;flex-shrink:0}
+    .cassa-page .summary-extra-old{color:#ff7777;font-weight:700;text-decoration:line-through;text-decoration-color:#ff5555;text-decoration-thickness:2px;font-variant-numeric:tabular-nums}
+    .cassa-page .summary-extra-free{font-weight:850;color:#fff;font-variant-numeric:tabular-nums}
+    .cassa-page .summary-extra-promo-note{font-size:11px;font-weight:700;color:#ffcc00}
+    .cassa-page .summary-accessory-discount{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:20px 0 8px;font-size:14px;font-weight:700}
+    .cassa-page .summary-accessory-discount strong{color:#ff7777;white-space:nowrap;font-weight:850;font-variant-numeric:tabular-nums}
     .cassa-page .no-extra{margin:0 0 6px;color:#bdbdbd;font-size:14px}
     .cassa-page .discount-block{margin:32px 0 24px}
     .cassa-page .discount-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px;line-height:1.45}
@@ -130,7 +139,7 @@
     .cassa-page .old-total{display:block;margin:15px 0 3px;color:#ff7777;font-size:clamp(20px,5vw,28px);font-weight:650;text-decoration:line-through;text-decoration-thickness:2px;text-decoration-color:#ff5555;font-variant-numeric:tabular-nums}
     .cassa-page .saving{margin:12px 0 0;color:#ffcc00;font-size:14px;font-weight:750}
     .cassa-page .total-hero{text-align:center;margin:0 0 30px}
-    /* Verde: nessun blocco sconto, spazio dedicato dopo la linea del riepilogo. */
+    /* Verde: nessun blocco sconto cassa, spazio dedicato dopo la linea del riepilogo. */
     .cassa-page .discount-block[hidden] + .total-hero{margin-top:40px}
     .cassa-page .total-heading,.cassa-page .rate-heading{text-align:center;font-size:12px;color:#d4d4d4;font-weight:750;letter-spacing:.09em}
     .cassa-page .total-hero strong{display:block;font-size:clamp(66px,10vw,90px);font-weight:850;line-height:1.08;margin-top:14px;white-space:nowrap;letter-spacing:-.075em;font-variant-numeric:tabular-nums}
@@ -269,10 +278,13 @@
         <button class="calculate" type="submit">Calcola<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18m-7-7 7 7-7 7"/></svg></button>
       </form>
     </div>
-    <div class="pricing-selection" id="pricing-selection" role="group" aria-label="Livello tariffario">
-      <button type="button" data-pricing="20" aria-label="Proposta maggiorata del 20 percento" aria-pressed="false"></button>
-      <button type="button" data-pricing="10" aria-label="Proposta maggiorata del 10 percento" aria-pressed="false"></button>
-      <button type="button" data-pricing="0" aria-label="Proposta base" aria-pressed="true"></button>
+    <div class="pricing-selection" id="pricing-selection" role="group" aria-label="Opzioni tariffarie e promozione accessori">
+      <div class="pricing-tiers" role="group" aria-label="Livello tariffario">
+        <button type="button" data-pricing="20" aria-label="Proposta maggiorata del 20 percento" aria-pressed="false"></button>
+        <button type="button" data-pricing="10" aria-label="Proposta maggiorata del 10 percento" aria-pressed="false"></button>
+        <button type="button" data-pricing="0" aria-label="Proposta base" aria-pressed="true"></button>
+      </div>
+      <button type="button" class="accessory-promo-zone" id="accessory-promo-zone" aria-label="Attiva o disattiva promozione accessori gratuita" aria-pressed="false"></button>
     </div>
   </main>
   <div class="loading-stage" id="loading-stage" hidden role="status" aria-label="Calcolo in corso">
@@ -290,6 +302,7 @@
         <p class="summary-included">Stampante fiscale · Cassetto · Modulo fatture</p>
         <div class="summary-label extras-title">Accessori aggiuntivi</div>
         <div id="result-extras" aria-live="polite"><p class="no-extra">Nessun accessorio aggiuntivo</p></div>
+        <div class="summary-accessory-discount" id="accessory-discount" hidden><span>Sconto accessori</span><strong id="accessory-discount-value">−0,00 €</strong></div>
       </section>
       <div class="discount-block" id="discount-block" hidden>
         <div class="discount-row"><span class="discount-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3H4a1 1 0 0 0-1 1v8l9 9 9-9-9-9Z"/><circle cx="8" cy="8" r="1.5"/></svg>Sconto disponibilità magazzino</span><strong class="discount-value" id="discount-value">−0,00 €</strong></div>
@@ -321,6 +334,7 @@
   var share={corp:0,intl:0};
   var period='annual';
   var pricingLevel=0;
+  var accessoryPromo=false;
   var cassaType='standard';
   var accessoryQty={tablet:0,base:0,scanner:0,comande:0,fiscale:0};
   // L'offerta Cassa e inversa al tasso POS: rosso (+20%) prezzo basso, giallo (+10%) intermedio, verde (base) prezzo alto.
@@ -394,7 +408,7 @@
       button.setAttribute('aria-pressed',String(Number(button.dataset.pricing)===level));
     });
     $('pricing-indicator').dataset.level=String(level);
-    $('pricing-indicator').setAttribute('aria-label',level===0?'Tariffa selezionata: base':'Tariffa selezionata: maggiorazione '+level+' percento');
+    $('pricing-indicator').setAttribute('aria-label',(level===0?'Tariffa selezionata: base':'Tariffa selezionata: maggiorazione '+level+' percento')+(accessoryPromo?', promozione accessori attiva':''));
   }
   function base(tpv){
     // Interpolazione logaritmica: ogni variazione percentuale del TPV produce
@@ -490,6 +504,12 @@
   document.querySelectorAll('[data-pricing]').forEach(function(button){
     button.addEventListener('click',function(){selectPricing(Number(button.dataset.pricing));});
   });
+  $('accessory-promo-zone').addEventListener('click',function(){
+    accessoryPromo=!accessoryPromo;
+    $('accessory-promo-zone').setAttribute('aria-pressed',String(accessoryPromo));
+    $('pricing-indicator').classList.toggle('accessory-promo-on',accessoryPromo);
+    $('pricing-indicator').setAttribute('aria-label',(pricingLevel===0?'Tariffa selezionata: base':'Tariffa selezionata: maggiorazione '+pricingLevel+' percento')+(accessoryPromo?', promozione accessori attiva':''));
+  });
   function selectCassa(type){
     if(type!=='standard'&&type!=='premium')return;
     cassaType=type;
@@ -549,13 +569,11 @@
     var discounted=discount>0;
     $('result-price').textContent=euro(listPrice);
     $('discount-block').hidden=!discounted;
-    $('list-total').hidden=!discounted;
-    $('saving').hidden=!discounted;
     if(discounted){
       $('discount-value').textContent='−'+euro(discount);
       $('stock-count').textContent=String(Math.floor(Math.random()*7)+1);
     }
-    var total=cassaPrice,rows=$('result-extras');
+    var total=cassaPrice,accessorySubtotal=0,rows=$('result-extras');
     rows.replaceChildren();
     var hasExtras=false;
     extras.forEach(function(item){
@@ -563,14 +581,31 @@
       if(!quantity)return;
       hasExtras=true;
       var subtotal=quantity*item.price;
-      total+=subtotal;
+      accessorySubtotal+=subtotal;
+      if(!accessoryPromo)total+=subtotal;
       var row=document.createElement('div');
       row.className='summary-extra';
       var label=document.createElement('span');
       label.textContent=item.name+' × '+quantity+' · '+euro(item.price)+'/cad.';
-      var amount=document.createElement('strong');
-      amount.textContent=euro(subtotal);
-      row.append(label,amount);
+      if(accessoryPromo){
+        var amounts=document.createElement('div');
+        amounts.className='summary-extra-amount';
+        var oldAmount=document.createElement('span');
+        oldAmount.className='summary-extra-old';
+        oldAmount.textContent=euro(subtotal);
+        var freeAmount=document.createElement('strong');
+        freeAmount.className='summary-extra-free';
+        freeAmount.textContent=euro(0);
+        var promotionNote=document.createElement('span');
+        promotionNote.className='summary-extra-promo-note';
+        promotionNote.textContent='Promozione accessori';
+        amounts.append(oldAmount,freeAmount,promotionNote);
+        row.append(label,amounts);
+      }else{
+        var amount=document.createElement('strong');
+        amount.textContent=euro(subtotal);
+        row.append(label,amount);
+      }
       rows.appendChild(row);
     });
     if(!hasExtras){
@@ -579,11 +614,17 @@
       empty.textContent='Nessun accessorio aggiuntivo';
       rows.appendChild(empty);
     }
+    var accessoryDiscount=accessoryPromo?accessorySubtotal:0;
+    $('accessory-discount').hidden=accessoryDiscount===0;
+    if(accessoryDiscount>0)$('accessory-discount-value').textContent='−'+euro(accessoryDiscount);
     $('result-total').textContent=euro(total);
-    if(discounted){
-      var listTotal=total+discount;
+    var totalDiscount=discount+accessoryDiscount;
+    $('list-total').hidden=totalDiscount===0;
+    $('saving').hidden=totalDiscount===0;
+    if(totalDiscount>0){
+      var listTotal=total+totalDiscount;
       $('list-total').textContent=euro(listTotal);
-      $('saving').textContent='Risparmi '+euro(discount)+' (−'+fmt.format(discount/listTotal*100)+'%)';
+      $('saving').textContent='Risparmi '+euro(totalDiscount)+' (−'+fmt.format(totalDiscount/listTotal*100)+'%)';
     }
     if(history.pushState)history.pushState({result:true},'','#risultato');
     startLoading();
