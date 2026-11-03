@@ -120,12 +120,9 @@
     .cassa-page .extras-title{margin-top:23px}
     .cassa-page .summary-extra{padding:7px 0}
     .cassa-page .summary-extra span{min-width:0}
-    .cassa-page .summary-extra-amount{display:flex;flex-direction:column;align-items:flex-end;gap:3px;text-align:right;flex-shrink:0}
-    .cassa-page .summary-extra-old{color:#ff7777;font-weight:700;text-decoration:line-through;text-decoration-color:#ff5555;text-decoration-thickness:2px;font-variant-numeric:tabular-nums}
-    .cassa-page .summary-extra-free{font-weight:850;color:#fff;font-variant-numeric:tabular-nums}
-    .cassa-page .summary-extra-promo-note{font-size:11px;font-weight:700;color:#ffcc00}
-    .cassa-page .summary-accessory-discount{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:20px 0 8px;font-size:14px;font-weight:700}
-    .cassa-page .summary-accessory-discount strong{color:#ff7777;white-space:nowrap;font-weight:850;font-variant-numeric:tabular-nums}
+    .cassa-page .summary-accessory-total{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:20px 0 10px;font-size:14px;font-weight:750}
+    .cassa-page .summary-accessory-total strong{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:850}
+    .cassa-page .summary-accessory-discount{margin:0 0 8px}
     .cassa-page .no-extra{margin:0 0 6px;color:#bdbdbd;font-size:14px}
     .cassa-page .discount-block{margin:32px 0 24px}
     .cassa-page .discount-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px;line-height:1.45}
@@ -302,7 +299,11 @@
         <p class="summary-included">Stampante fiscale · Cassetto · Modulo fatture</p>
         <div class="summary-label extras-title">Accessori aggiuntivi</div>
         <div id="result-extras" aria-live="polite"><p class="no-extra">Nessun accessorio aggiuntivo</p></div>
-        <div class="summary-accessory-discount" id="accessory-discount" hidden><span>Sconto accessori</span><strong id="accessory-discount-value">−0,00 €</strong></div>
+        <div class="summary-accessory-total" id="accessory-total" hidden><span>Totale accessori</span><strong id="accessory-total-value">0,00 €</strong></div>
+        <div class="summary-accessory-discount discount-row" id="accessory-discount" hidden>
+          <span class="discount-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3H4a1 1 0 0 0-1 1v8l9 9 9-9-9-9Z"/><circle cx="8" cy="8" r="1.5"/></svg>Sconto accessori</span>
+          <strong class="discount-value" id="accessory-discount-value">−0,00 €</strong>
+        </div>
       </section>
       <div class="discount-block" id="discount-block" hidden>
         <div class="discount-row"><span class="discount-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3H4a1 1 0 0 0-1 1v8l9 9 9-9-9-9Z"/><circle cx="8" cy="8" r="1.5"/></svg>Sconto disponibilità magazzino</span><strong class="discount-value" id="discount-value">−0,00 €</strong></div>
@@ -587,25 +588,9 @@
       row.className='summary-extra';
       var label=document.createElement('span');
       label.textContent=item.name+' × '+quantity+' · '+euro(item.price)+'/cad.';
-      if(accessoryPromo){
-        var amounts=document.createElement('div');
-        amounts.className='summary-extra-amount';
-        var oldAmount=document.createElement('span');
-        oldAmount.className='summary-extra-old';
-        oldAmount.textContent=euro(subtotal);
-        var freeAmount=document.createElement('strong');
-        freeAmount.className='summary-extra-free';
-        freeAmount.textContent=euro(0);
-        var promotionNote=document.createElement('span');
-        promotionNote.className='summary-extra-promo-note';
-        promotionNote.textContent='Promozione accessori';
-        amounts.append(oldAmount,freeAmount,promotionNote);
-        row.append(label,amounts);
-      }else{
-        var amount=document.createElement('strong');
-        amount.textContent=euro(subtotal);
-        row.append(label,amount);
-      }
+      var amount=document.createElement('strong');
+      amount.textContent=euro(subtotal);
+      row.append(label,amount);
       rows.appendChild(row);
     });
     if(!hasExtras){
@@ -614,6 +599,8 @@
       empty.textContent='Nessun accessorio aggiuntivo';
       rows.appendChild(empty);
     }
+    $('accessory-total').hidden=!hasExtras;
+    if(hasExtras)$('accessory-total-value').textContent=euro(accessorySubtotal);
     var accessoryDiscount=accessoryPromo?accessorySubtotal:0;
     $('accessory-discount').hidden=accessoryDiscount===0;
     if(accessoryDiscount>0)$('accessory-discount-value').textContent='−'+euro(accessoryDiscount);
