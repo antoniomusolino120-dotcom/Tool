@@ -311,7 +311,8 @@
   var pricingLevel=0;
   var cassaType='standard';
   var accessoryQty={tablet:0,base:0,scanner:0,comande:0,fiscale:0};
-  var cassaPrices={standard:{0:1500,10:1745,20:1990},premium:{0:1990,10:2490,20:2990}};
+  // L'offerta Cassa e inversa al tasso POS: rosso (+20%) prezzo basso, giallo (+10%) intermedio, verde (base) prezzo alto.
+  var cassaPrices={standard:{0:1990,10:1745,20:1500},premium:{0:2990,10:2490,20:1990}};
   var extras=[{"id":"tablet","name":"Tablet aggiuntivo","price":399},{"id":"base","name":"Base di ricarica POS","price":99},{"id":"scanner","name":"Scanner","price":99},{"id":"comande","name":"Stampante per comande","price":399},{"id":"fiscale","name":"Stampante fiscale aggiuntiva","price":499}];
   var money=new Intl.NumberFormat('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
   function euro(value){return money.format(value)+' €';}
