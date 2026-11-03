@@ -1,5 +1,5 @@
 /* Offline support for comparison, POS and cash register calculators. */
-const CACHE_NAME = 'confronto-pwa-v30';
+const CACHE_NAME = 'confronto-pwa-v31';
 const ASSETS = [
   '/',
   '/index.html',

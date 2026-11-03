@@ -123,9 +123,6 @@
     .cassa-page .extras-title{margin-top:23px}
     .cassa-page .summary-extra{padding:7px 0}
     .cassa-page .summary-extra span{min-width:0}
-    .cassa-page .summary-extra-discounted{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;font-variant-numeric:tabular-nums}
-    .cassa-page .summary-extra-discounted .summary-original-price{font-size:13px;color:#ff7777;text-decoration:line-through;text-decoration-color:#ff5555;text-decoration-thickness:2px}
-    .cassa-page .summary-extra-discounted strong{font-weight:850}
     .cassa-page .summary-accessory-total{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:20px 0 10px;font-size:14px;font-weight:750}
     .cassa-page .summary-accessory-total strong{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:850}
     .cassa-page .summary-accessory-discount{margin:0 0 8px}
@@ -615,21 +612,9 @@
       row.className='summary-extra';
       var label=document.createElement('span');
       label.textContent=item.name+' × '+quantity+' · '+euro(item.price)+'/cad.';
-      if(discountedIndividually){
-        var discountedAmount=document.createElement('span');
-        discountedAmount.className='summary-extra-discounted';
-        var original=document.createElement('span');
-        original.className='summary-original-price';
-        original.textContent=euro(subtotal);
-        var free=document.createElement('strong');
-        free.textContent=euro(0);
-        discountedAmount.append(original,free);
-        row.append(label,discountedAmount);
-      }else{
-        var amount=document.createElement('strong');
-        amount.textContent=euro(subtotal);
-        row.append(label,amount);
-      }
+      var amount=document.createElement('strong');
+      amount.textContent=euro(subtotal);
+      row.append(label,amount);
       rows.appendChild(row);
     });
     if(!hasExtras){
