@@ -118,7 +118,6 @@
     .cassa-page .summary-price{font-size:clamp(20px,3.6vw,25px);font-weight:800;letter-spacing:-.035em;white-space:nowrap;font-variant-numeric:tabular-nums}
     .cassa-page .summary-line,.cassa-page .summary-extra{display:flex;align-items:baseline;justify-content:space-between;gap:16px;font-size:15px;line-height:1.5}
     .cassa-page .summary-line strong,.cassa-page .summary-extra strong{font-weight:800;white-space:nowrap}
-    .cassa-page .summary-extra strong.summary-extra-price-discounted{color:#ff7777;text-decoration:line-through;text-decoration-color:#ff5555;text-decoration-thickness:2px}
     .cassa-page .summary-label{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:#a9a9a9;font-weight:750;margin:24px 0 9px}
     .cassa-page .summary-included{font-size:14px;color:#eee;line-height:1.6;margin:0}
     .cassa-page .extras-title{margin-top:23px}
@@ -615,7 +614,6 @@
       label.textContent=item.name+' × '+quantity;
       var amount=document.createElement('strong');
       amount.textContent=euro(subtotal);
-      if(accessoryPromo||discountedIndividually)amount.className='summary-extra-price-discounted';
       row.append(label,amount);
       rows.appendChild(row);
     });
