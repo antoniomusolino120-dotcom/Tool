@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff" id="theme-color">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Calcolatore Cassa</title>
+  <style>
+    :root{font-family:Arial,Helvetica,sans-serif;color-scheme:light}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none}
+    body{background:#fff;color:#000;-webkit-font-smoothing:antialiased;min-width:300px}
+    body.result{background:#000;color:#fff}
+    button,input{font:inherit}
+    button{cursor:pointer}
+    button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid currentColor;outline-offset:4px}
+    [hidden]{display:none!important}
+    .app{position:fixed;inset:0;height:100vh;height:100dvh;height:var(--app-height,100dvh);display:flex;flex-direction:column;overflow:hidden}
+    .top{flex-shrink:0;height:90px;width:min(calc(100% - 48px),1050px);margin:0 auto;display:flex;align-items:center;gap:24px}
+    .pricing-indicator{position:absolute;z-index:6;top:calc(16px + env(safe-area-inset-top));right:calc(18px + env(safe-area-inset-right));width:6px;height:6px;border-radius:50%;background:#34c759;pointer-events:none}
+    .pricing-indicator[data-level="10"]{background:#ffcc00}
+    .pricing-indicator[data-level="20"]{background:#ff453a}
+    .home{width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #ddd;border-radius:50%;color:#000;text-decoration:none}
+    .home svg,.back svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    h1{margin:0;font-size:clamp(20px,3vw,29px);font-weight:800;letter-spacing:-.045em}
+    .stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:24px 24px 60px;overflow:hidden;overscroll-behavior:none}
+    .form-wrap{width:min(100%,550px);margin:auto}
+    label{display:block;font-weight:700;font-size:15px;letter-spacing:-.02em}
+    .amount-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .period-switch{display:flex;align-items:center;padding:3px;gap:2px;border:1px solid #ddd;border-radius:12px;background:#f2f2f2}
+    .period-switch button{border:0;border-radius:9px;background:transparent;color:#444;padding:9px 12px;font-size:13px;font-weight:750;line-height:1.2;min-height:36px}
+    .period-switch button[aria-pressed="true"]{background:#000;color:#fff}
+    .amount-info{min-height:18px;margin-top:8px;font-size:12px;line-height:18px;color:#555}
+    .euro-box{margin-top:12px;display:flex;align-items:center;height:84px;border:2px solid #000;border-radius:15px;padding:0 18px;gap:8px}
+    .currency{font-size:clamp(24px,5vw,38px);font-weight:800}
+    #amount{width:100%;min-width:0;border:0;outline:none;font-size:clamp(27px,6vw,42px);font-weight:800;letter-spacing:-.04em;background:transparent;color:inherit;font-variant-numeric:tabular-nums}
+    .mix{margin-top:36px}
+    .mix-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:19px}
+    .pct-box{display:flex;align-items:center;justify-content:center;gap:4px;border:1px solid #bbb;border-radius:10px;padding:7px 10px;min-width:95px;height:46px}
+    .pct-box input{border:0;outline:none;text-align:right;min-width:0;width:48px;font-size:20px;font-weight:750;background:transparent;color:#000;font-variant-numeric:tabular-nums;appearance:textfield;-moz-appearance:textfield}
+    .pct-box input::-webkit-outer-spin-button,.pct-box input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+    .pct-box span{font-size:19px;font-weight:750}
+    .range{width:100%;height:8px;border-radius:8px;margin:0;display:block;appearance:none;-webkit-appearance:none;background:linear-gradient(to right,#000 0 var(--progress,0%),#e6e6e6 var(--progress,0%) 100%);touch-action:pan-y}
+    .range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:29px;height:29px;border:7px solid #000;border-radius:50%;background:#fff}
+    .range::-moz-range-thumb{width:16px;height:16px;border:7px solid #000;border-radius:50%;background:#fff}
+    .calculate{width:100%;height:66px;border:0;border-radius:12px;background:#000;color:#fff;font-size:20px;font-weight:750;margin-top:54px;display:flex;align-items:center;justify-content:center;gap:12px}
+    .calculate svg{width:19px;height:19px;fill:none;stroke:#fff;stroke-width:2}
+    .pricing-selection{position:absolute;z-index:5;left:0;right:0;bottom:0;top:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;overflow:hidden;overscroll-behavior:none;pointer-events:none}
+    .pricing-selection button{appearance:none;display:block;border:0;background:transparent;color:transparent;padding:0;min-width:0;height:100%;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+    .pricing-selection button:focus-visible{outline:2px solid #888;outline-offset:-2px}
+    .error{font-size:13px;color:#a00;min-height:21px;margin:11px 0 0}
+    .result .top,.result .form-stage,.result .pricing-selection,.result .pricing-indicator,.loading .top,.loading .form-stage,.loading .pricing-selection,.loading .pricing-indicator{display:none}
+    body.loading{background:#000;color:#fff}
+    .loading-stage{position:fixed;inset:0;display:grid;place-items:center;background:#000;z-index:20}
+    .loading-content{width:min(100%,560px);padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;transform:translateY(-8px)}
+    .loading-center{width:72px;height:72px;display:grid;place-items:center;flex-shrink:0}
+    .loading-message{font-weight:600;font-size:clamp(16px,3vw,20px);letter-spacing:-.02em;line-height:1.5;text-align:center;color:#fff;min-height:3em;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity 180ms ease}
+    .loading-message.is-changing{opacity:0}
+    .loading-spinner{width:58px;height:58px;display:block;border:4px solid rgba(255,255,255,.22);border-top-color:#fff;border-radius:50%;animation:spin 0.85s linear infinite;transform-origin:center}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @media(prefers-reduced-motion:reduce){.loading-spinner{animation-duration:2s}}
+    .result-stage{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;padding:96px 24px 72px;overflow:hidden;overscroll-behavior:none}
+    .result-content{width:min(100%,640px);display:flex;flex-direction:column;align-items:center;text-align:center}
+    .offer-title{color:#fff;font-size:clamp(13px,2.7vw,16px);font-weight:700;letter-spacing:.1em;line-height:1.3}
+    .big-rate{display:flex;align-items:baseline;gap:3px;white-space:nowrap;font-weight:850;letter-spacing:-.08em;line-height:1;font-variant-numeric:tabular-nums;margin:27px 0 42px}
+    .big-rate #number{font-size:clamp(64px,16vw,174px)}
+    .big-rate .unit{font-size:clamp(44px,11vw,112px)}
+    .exception{border-top:1px solid #4d4d4d;padding-top:34px;width:min(100%,530px)}
+    .exception-title{display:flex;align-items:center;justify-content:center;gap:11px;color:#fff;font-size:clamp(18px,3vw,21px);font-weight:750;letter-spacing:-.025em}
+    .exception-icon{width:25px;height:25px;flex:none;stroke:#fff;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+    .exception-text{max-width:480px;margin:18px auto 0;font-size:clamp(14px,2.3vw,16px);line-height:1.6;color:#bdbdbd}
+    .back{position:absolute;top:clamp(25px,5vw,50px);left:clamp(24px,6vw,80px);background:transparent;color:#fff;border:1px solid #777;border-radius:50%;width:54px;height:54px;display:flex;align-items:center;justify-content:center}
+    @media(max-width:500px){.top{height:70px}.stage{padding:12px 25px 30px}.euro-box{height:70px}.mix{margin-top:22px}.mix-head{margin-bottom:14px}.calculate{margin-top:30px}.result-stage{padding:95px 24px 45px}.big-rate{margin:26px 0 37px}.big-rate #number{font-size:clamp(59px,15.1vw,85px)}.big-rate .unit{font-size:clamp(39px,10.5vw,66px)}.exception{padding-top:28px}.exception-text{margin-top:15px}.loading-content{gap:27px}}
+    @media(max-height:700px){.top{height:58px}.stage{padding-top:8px;padding-bottom:10px}.euro-box{height:60px;margin-top:8px}.mix{margin-top:16px}.mix-head{margin-bottom:10px}.calculate{height:54px;margin-top:22px}.period-switch button{min-height:32px;padding:7px 10px}.result-stage{padding-top:80px;padding-bottom:20px}.big-rate{margin-top:20px;margin-bottom:25px}.exception{padding-top:18px}}
+    @media(max-height:540px){.stage{padding:4px 16px}.form-wrap{margin:auto}.amount-info{margin-top:4px;min-height:16px}.period-switch button{padding:5px 9px;min-height:30px}.euro-box{height:52px;margin-top:6px}.mix{margin-top:10px}.mix-head{margin-bottom:7px}.calculate{margin-top:10px;height:46px}.error{min-height:17px;margin:4px 0 0}.result-stage{padding:65px 16px 10px}.big-rate{margin:10px 0 14px}.big-rate #number{font-size:clamp(52px,12vw,80px)}.big-rate .unit{font-size:clamp(30px,8vw,56px)}.exception{padding-top:12px}.exception-text{margin:7px auto 0;line-height:1.35;font-size:13px}.back{top:12px;left:16px;width:42px;height:42px}}
+    @media(prefers-reduced-motion:reduce){.loading-message{transition:none}}
+
+    /* Il preventivatore Cassa riprende lo stile del POS, con modulo scorrevole. */
+    .cassa-page .form-stage{flex-direction:column;align-items:stretch;justify-content:flex-start;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:18px 24px 0}
+    .cassa-page .form-wrap{flex:0 0 auto;width:min(100%,550px);margin:0 auto}
+    .cassa-page .cassa-head{margin-bottom:29px}
+    .cassa-page .cassa-switch{display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:4px;margin-top:13px;border:1px solid #ddd;border-radius:12px;background:#f3f3f3}
+    .cassa-page .cassa-switch button{border:0;border-radius:9px;background:transparent;color:#333;min-height:48px;font-weight:750}
+    .cassa-page .cassa-switch button[aria-pressed="true"]{background:#000;color:#fff}
+    .cassa-page .euro-box{height:70px}
+    .cassa-page .mix{margin-top:26px}
+    .cassa-page .mix-head{margin-bottom:17px}
+    .cassa-page h2{margin:0 0 12px;font-size:16px;font-weight:800;letter-spacing:-.02em}
+    .cassa-page .included,.cassa-page .accessories{margin-top:32px;padding-top:22px;border-top:1px solid #ddd}
+    .cassa-page .included-items{display:flex;flex-wrap:wrap;gap:8px}
+    .cassa-page .included-items span{font-size:13px;padding:9px 12px;border-radius:9px;background:#f3f3f3;font-weight:600}
+    .cassa-page .extra-row{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:78px;border-bottom:1px solid #ededed;padding:10px 0}
+    .cassa-page .extra-info{display:flex;flex-direction:column;gap:6px;min-width:0}
+    .cassa-page .extra-name{font-size:14px;font-weight:700;line-height:1.25}
+    .cassa-page .extra-price{font-size:13px;color:#555}
+    .cassa-page .extra-actions{flex:0 0 auto}
+    .cassa-page .extra-add,.cassa-page .extra-qty button{display:grid;place-items:center;min-width:38px;height:40px;padding:0 6px;border:1px solid #d2d2d2;background:#fff;border-radius:9px;color:#000;font-size:21px;font-weight:500}
+    .cassa-page .extra-qty{display:flex;align-items:center;gap:5px}
+    .cassa-page .extra-qty[hidden]{display:none}
+    .cassa-page .extra-qty output{min-width:21px;text-align:center;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+    .cassa-page .extra-qty .trash{border-color:#e3e3e3;margin-left:5px}
+    .cassa-page .error{margin-top:18px}
+    .cassa-page .calculate{margin-top:10px;margin-bottom:0;flex:none}
+    .cassa-page .pricing-selection{position:relative;inset:auto!important;flex:1 0 180px;min-height:180px;width:100%;z-index:5;pointer-events:none;overflow:visible}
+    .cassa-page .pricing-selection button{pointer-events:auto;min-height:180px}
+    .cassa-page .result-stage{display:block;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:82px 22px 56px}
+    .cassa-page .result-content{align-items:stretch;text-align:left;width:min(100%,580px);margin:0 auto}
+    .cassa-page .offer-title{text-align:center;margin-bottom:12px;font-size:12px}
+    .cassa-page .summary-heading{color:#fff;text-align:center;font-size:clamp(20px,4vw,28px);margin:0 0 28px;font-weight:850;letter-spacing:-.04em}
+    .cassa-page .summary-card{border-top:1px solid #555;border-bottom:1px solid #555;padding:22px 0 16px}
+    .cassa-page .summary-product{font-size:25px;font-weight:800;letter-spacing:-.035em;margin-bottom:24px}
+    .cassa-page .summary-line,.cassa-page .summary-extra{display:flex;align-items:baseline;justify-content:space-between;gap:16px;font-size:15px;line-height:1.5}
+    .cassa-page .summary-line strong,.cassa-page .summary-extra strong{font-weight:800;white-space:nowrap}
+    .cassa-page .summary-label{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:#a9a9a9;font-weight:750;margin:24px 0 9px}
+    .cassa-page .summary-included{font-size:14px;color:#eee;line-height:1.6;margin:0}
+    .cassa-page .extras-title{margin-top:23px}
+    .cassa-page .summary-extra{padding:7px 0}
+    .cassa-page .summary-extra span{min-width:0}
+    .cassa-page .no-extra{margin:0 0 6px;color:#bdbdbd;font-size:14px}
+    .cassa-page .total-row{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:28px 0 44px}
+    .cassa-page .total-row span{font-size:13px;font-weight:800;letter-spacing:.025em}
+    .cassa-page .total-row strong{font-weight:900;font-size:clamp(25px,7vw,39px);white-space:nowrap;letter-spacing:-.055em}
+    .cassa-page .rate-heading{text-align:center;font-size:12px;color:#d4d4d4;font-weight:750;letter-spacing:.09em}
+    .cassa-page .big-rate{justify-content:center;margin:14px 0 35px}
+    .cassa-page .big-rate #number{font-size:clamp(66px,15vw,120px)}
+    .cassa-page .big-rate .unit{font-size:clamp(46px,10vw,90px)}
+    .cassa-page .exception{text-align:center;align-self:center;padding-bottom:28px}
+    .cassa-page .back{position:absolute;top:20px;left:20px;width:46px;height:46px;z-index:3}
+    @media(max-width:500px){
+      .cassa-page .form-stage{padding:10px 20px 0}
+      .cassa-page .cassa-head{margin-bottom:24px}
+      .cassa-page .euro-box{height:66px}
+      .cassa-page .mix{margin-top:22px}
+      .cassa-page .included,.cassa-page .accessories{margin-top:27px;padding-top:18px}
+      .cassa-page .extra-add,.cassa-page .extra-qty button{min-width:34px;height:38px}
+      .cassa-page .extra-qty{gap:3px}
+      .cassa-page .extra-qty .trash{margin-left:2px}
+      .cassa-page .result-stage{padding:78px 20px 42px}
+      .cassa-page .total-row{align-items:flex-start;flex-direction:column;gap:10px}
+    }
+    @media(max-height:700px){
+      .cassa-page .form-stage{padding-top:12px;padding-bottom:0}
+      .cassa-page .calculate{height:58px;margin-top:10px}
+      .cassa-page .result-stage{padding-top:76px;padding-bottom:40px}
+    }
+  </style>
+
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+</head>
+<body class="cassa-page">
+<div class="app">
+  <header class="top"><a class="home" href="./" aria-label="Torna alla scelta degli strumenti"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7M7 12h13"/></svg></a><h1>Calcolatore Cassa</h1></header>
+  <span class="pricing-indicator" id="pricing-indicator" data-level="0" role="status" aria-label="Tariffa selezionata: base"></span>
+  <main class="stage form-stage" id="form-stage">
+    <div class="form-wrap">
+      <form id="calc-form" novalidate>
+        <div class="cassa-head"><label id="cassa-label">Tipologia di cassa</label>
+          <div class="cassa-switch" role="group" aria-labelledby="cassa-label">
+            <button type="button" data-cassa="standard" aria-pressed="true">Standard</button>
+            <button type="button" data-cassa="premium" aria-pressed="false">Premium</button>
+          </div>
+        </div>
+        <div class="amount-head">
+          <label for="amount">TPV</label>
+          <div class="period-switch" role="group" aria-label="Periodo del transato">
+            <button id="period-monthly" type="button" aria-pressed="false">Mensile</button>
+            <button id="period-annual" type="button" aria-pressed="true">Annuale</button>
+          </div>
+        </div>
+        <div class="euro-box"><span class="currency" aria-hidden="true">€</span><input id="amount" inputmode="decimal" autocomplete="off" value="150.000" required aria-label="Transato annuo in euro"></div>
+        <div class="amount-info" id="annual-equivalent" aria-live="polite"></div>
+        <div class="mix">
+          <div class="mix-head"><label for="corp-range">Carte aziendali</label><div class="pct-box"><input id="corp-input" type="number" min="0" max="100" step=".1" value="0" inputmode="decimal" aria-label="Percentuale carte aziendali"><span>%</span></div></div>
+          <input class="range" id="corp-range" type="range" min="0" max="100" step="1" value="0" aria-label="Carte aziendali, barra percentuale">
+        </div>
+        <div class="mix">
+          <div class="mix-head"><label for="intl-range">Carte estere</label><div class="pct-box"><input id="intl-input" type="number" min="0" max="100" step=".1" value="0" inputmode="decimal" aria-label="Percentuale carte estere"><span>%</span></div></div>
+          <input class="range" id="intl-range" type="range" min="0" max="100" step="1" value="0" aria-label="Carte estere, barra percentuale">
+        </div>
+        <section class="included" aria-label="Dotazione inclusa">
+          <h2>Dotazione inclusa</h2>
+          <div class="included-items"><span>✓ Stampante fiscale</span><span>✓ Cassetto</span><span>✓ Modulo fatture</span></div>
+        </section>
+        <section class="accessories" aria-label="Accessori aggiuntivi">
+          <h2>Accessori aggiuntivi</h2>
+          <div class="extra-row">
+            <div class="extra-info"><span class="extra-name">Tablet aggiuntivo</span><span class="extra-price">399 €</span></div>
+            <div class="extra-actions">
+              <button type="button" class="extra-add" data-action="add" data-extra="tablet" aria-label="Aggiungi Tablet aggiuntivo">+</button>
+              <div class="extra-qty" data-qty-tools="tablet" hidden>
+                <button type="button" data-action="minus" data-extra="tablet" aria-label="Riduci Tablet aggiuntivo">−</button>
+                <output data-qty="tablet" aria-live="polite">1</output>
+                <button type="button" data-action="plus" data-extra="tablet" aria-label="Aumenta Tablet aggiuntivo">+</button>
+                <button type="button" class="trash" data-action="remove" data-extra="tablet" aria-label="Rimuovi Tablet aggiuntivo"><svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v6m4-6v6"/></svg></button>
+              </div>
+            </div>
+          </div>
+          <div class="extra-row">
+            <div class="extra-info"><span class="extra-name">Base di ricarica POS</span><span class="extra-price">99 €</span></div>
+            <div class="extra-actions">
+              <button type="button" class="extra-add" data-action="add" data-extra="base" aria-label="Aggiungi Base di ricarica POS">+</button>
+              <div class="extra-qty" data-qty-tools="base" hidden>
+                <button type="button" data-action="minus" data-extra="base" aria-label="Riduci Base di ricarica POS">−</button>
+                <output data-qty="base" aria-live="polite">1</output>
+                <button type="button" data-action="plus" data-extra="base" aria-label="Aumenta Base di ricarica POS">+</button>
+                <button type="button" class="trash" data-action="remove" data-extra="base" aria-label="Rimuovi Base di ricarica POS"><svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v6m4-6v6"/></svg></button>
+              </div>
+            </div>
+          </div>
+          <div class="extra-row">
+            <div class="extra-info"><span class="extra-name">Scanner</span><span class="extra-price">99 €</span></div>
+            <div class="extra-actions">
+              <button type="button" class="extra-add" data-action="add" data-extra="scanner" aria-label="Aggiungi Scanner">+</button>
+              <div class="extra-qty" data-qty-tools="scanner" hidden>
+                <button type="button" data-action="minus" data-extra="scanner" aria-label="Riduci Scanner">−</button>
+                <output data-qty="scanner" aria-live="polite">1</output>
+                <button type="button" data-action="plus" data-extra="scanner" aria-label="Aumenta Scanner">+</button>
+                <button type="button" class="trash" data-action="remove" data-extra="scanner" aria-label="Rimuovi Scanner"><svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v6m4-6v6"/></svg></button>
+              </div>
+            </div>
+          </div>
+          <div class="extra-row">
+            <div class="extra-info"><span class="extra-name">Stampante per comande</span><span class="extra-price">399 €</span></div>
+            <div class="extra-actions">
+              <button type="button" class="extra-add" data-action="add" data-extra="comande" aria-label="Aggiungi Stampante per comande">+</button>
+              <div class="extra-qty" data-qty-tools="comande" hidden>
+                <button type="button" data-action="minus" data-extra="comande" aria-label="Riduci Stampante per comande">−</button>
+                <output data-qty="comande" aria-live="polite">1</output>
+                <button type="button" data-action="plus" data-extra="comande" aria-label="Aumenta Stampante per comande">+</button>
+                <button type="button" class="trash" data-action="remove" data-extra="comande" aria-label="Rimuovi Stampante per comande"><svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v6m4-6v6"/></svg></button>
+              </div>
+            </div>
+          </div>
+          <div class="extra-row">
+            <div class="extra-info"><span class="extra-name">Stampante fiscale aggiuntiva</span><span class="extra-price">499 €</span></div>
+            <div class="extra-actions">
+              <button type="button" class="extra-add" data-action="add" data-extra="fiscale" aria-label="Aggiungi Stampante fiscale aggiuntiva">+</button>
+              <div class="extra-qty" data-qty-tools="fiscale" hidden>
+                <button type="button" data-action="minus" data-extra="fiscale" aria-label="Riduci Stampante fiscale aggiuntiva">−</button>
+                <output data-qty="fiscale" aria-live="polite">1</output>
+                <button type="button" data-action="plus" data-extra="fiscale" aria-label="Aumenta Stampante fiscale aggiuntiva">+</button>
+                <button type="button" class="trash" data-action="remove" data-extra="fiscale" aria-label="Rimuovi Stampante fiscale aggiuntiva"><svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v6m4-6v6"/></svg></button>
+              </div>
+            </div>
+          </div>
+        </section>
+        <div class="error" id="error" role="alert" aria-live="polite"></div>
+        <button class="calculate" type="submit">Calcola<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18m-7-7 7 7-7 7"/></svg></button>
+      </form>
+    </div>
+    <div class="pricing-selection" id="pricing-selection" role="group" aria-label="Modalità della proposta commerciale">
+      <button type="button" data-pricing="20" aria-label="Proposta maggiorata del 20 percento" aria-pressed="false"></button>
+      <button type="button" data-pricing="10" aria-label="Proposta maggiorata del 10 percento" aria-pressed="false"></button>
+      <button type="button" data-pricing="0" aria-label="Proposta base" aria-pressed="true"></button>
+    </div>
+  </main>
+  <div class="loading-stage" id="loading-stage" hidden role="status" aria-label="Calcolo in corso">
+    <div class="loading-content">
+      <div class="loading-center"><span class="loading-spinner" aria-hidden="true"></span></div>
+      <div class="loading-message" id="loading-message" aria-live="off">Stiamo calcolando il tuo tasso…</div>
+    </div>
+  </div>
+  <main class="result-stage" id="result-stage" hidden aria-label="Preventivo cassa">
+    <button class="back" type="button" id="back" aria-label="Torna alla configurazione"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7M7 12h13"/></svg></button>
+    <div class="result-content">
+      <div class="offer-title" id="offer-title">LA TUA OFFERTA</div>
+      <h2 class="summary-heading">PREVENTIVO CASSA</h2>
+      <section class="summary-card" aria-label="Dettaglio cassa">
+        <div class="summary-product" id="result-product">Cassa Standard</div>
+        <div class="summary-line"><span>Cassa</span><strong id="result-price">1.500,00 €</strong></div>
+        <div class="summary-label">Dotazione inclusa</div>
+        <p class="summary-included">Stampante fiscale · Cassetto · Modulo fatture</p>
+        <div class="summary-label extras-title">Accessori aggiuntivi</div>
+        <div id="result-extras" aria-live="polite"><p class="no-extra">Nessun accessorio aggiuntivo</p></div>
+      </section>
+      <div class="total-row"><span>TOTALE UNA TANTUM</span><strong id="result-total">1.500,00 €</strong></div>
+      <div class="rate-heading">TASSO PROPOSTO SUL TRANSATO</div>
+      <div class="big-rate" aria-live="polite"><span id="number">0,84</span><span class="unit">%</span></div>
+      <section class="exception" aria-label="Condizioni commerciali">
+        <div class="exception-title">
+          <svg class="exception-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20 6v5.4c0 4.9-3.3 8.2-8 10.1-4.7-1.9-8-5.2-8-10.1V6l8-3.5Z"/><path d="m8.7 12 2.4 2.4 4.5-4.8"/></svg>
+          <span id="exception-heading">Condizioni straordinarie</span>
+        </div>
+        <p class="exception-text" id="exception-description">L’eventuale applicazione di un tasso inferiore è subordinata all’approvazione del responsabile commerciale.</p>
+      </section>
+    </div>
+  </main>
+
+</div>
+<script>
+(function(){
+  'use strict';
+  var points=[[48000,1.44],[80000,1.20],[100000,1.09],[150000,.94],[200000,.90],[216000,.89],[250000,.87],[300000,.84],[350000,.81],[400000,.79],[450000,.77],[500000,.75]];
+  var share={corp:0,intl:0};
+  var period='annual';
+  var pricingLevel=0;
+  var cassaType='standard';
+  var accessoryQty={tablet:0,base:0,scanner:0,comande:0,fiscale:0};
+  var cassaPrices={standard:{0:1500,10:1745,20:1990},premium:{0:1990,10:2490,20:2990}};
+  var extras=[{"id":"tablet","name":"Tablet aggiuntivo","price":399},{"id":"base","name":"Base di ricarica POS","price":99},{"id":"scanner","name":"Scanner","price":99},{"id":"comande","name":"Stampante per comande","price":399},{"id":"fiscale","name":"Stampante fiscale aggiuntiva","price":499}];
+  var money=new Intl.NumberFormat('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
+  function euro(value){return money.format(value)+' €';}
+  var LOADING_MS=15000;
+  var loadingMessages=['Stiamo calcolando il tuo tasso…','Analizziamo il tuo transato annuo…','Valutiamo la composizione delle carte…','Stiamo preparando la tua offerta…'];
+  var messageTimers=[];
+  var loadTimer=null;
+  var loadingStarted=0;
+  var loadingRun=0;
+  var $=function(id){return document.getElementById(id)};
+  var fmt=new Intl.NumberFormat('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
+  function floorRate(rate){
+    // Tronca al centesimo di punto percentuale, correggendo solo
+    // i minimi errori binari dei valori esatti.
+    return Math.floor(rate*100+1e-12)/100;
+  }
+  var euros=new Intl.NumberFormat('it-IT',{maximumFractionDigits:2});
+  function parseEuro(raw){
+    var str=String(raw).replace(/[^0-9.,]/g,'');
+    if(!str)return NaN;
+    if(str.includes(','))str=str.replace(/\./g,'').replace(',','.');
+    else if(!/^\d+\.\d{1,2}$/.test(str))str=str.replace(/\./g,'');
+    return Number(str);
+  }
+  function updateAnnualEquivalent(){
+    var entered=parseEuro($('amount').value);
+    $('annual-equivalent').textContent=period==='monthly' && Number.isFinite(entered)
+      ?'Equivalente annuo: € '+euros.format(entered*12)
+      :'';
+  }
+  function setPeriod(next){
+    if(next===period)return;
+    var entered=parseEuro($('amount').value);
+    if(Number.isFinite(entered)){
+      $('amount').value=euros.format(next==='monthly'?entered/12:entered*12);
+    }
+    period=next;
+    $('period-monthly').setAttribute('aria-pressed',String(period==='monthly'));
+    $('period-annual').setAttribute('aria-pressed',String(period==='annual'));
+    $('amount').setAttribute('aria-label',period==='monthly'?'Transato mensile in euro':'Transato annuo in euro');
+    $('error').textContent='';
+    updateAnnualEquivalent();
+  }
+  function updatePricingZone(){/* Zone nel flusso scrollabile: nessun overlay fisso. */}
+  function refreshViewport(){
+    // iOS browsers can restore stale dvh/fixed-element geometry after reload.
+    // Re-measure the visible viewport and then reposition the touch zones.
+    var viewport=window.visualViewport;
+    var height=viewport && viewport.height>0?viewport.height:window.innerHeight;
+    if(Number.isFinite(height)&&height>0){
+      document.querySelector('.app').style.setProperty('--app-height',height+'px');
+    }
+    updatePricingZone();
+  }
+  function scheduleViewportRefresh(){
+    refreshViewport();
+    requestAnimationFrame(refreshViewport);
+    setTimeout(refreshViewport,150);
+    setTimeout(refreshViewport,500);
+  }
+  function selectPricing(level){
+    if(level!==0&&level!==10&&level!==20)return;
+    pricingLevel=level;
+    document.querySelectorAll('[data-pricing]').forEach(function(button){
+      button.setAttribute('aria-pressed',String(Number(button.dataset.pricing)===level));
+    });
+    $('pricing-indicator').dataset.level=String(level);
+    $('pricing-indicator').setAttribute('aria-label',level===0?'Tariffa selezionata: base':'Tariffa selezionata: maggiorazione '+level+' percento');
+  }
+  function base(tpv){
+    // Interpolazione logaritmica: ogni variazione percentuale del TPV produce
+    // un adeguamento continuo del tasso, senza scaglioni o salti.
+    if(tpv<=points[0][0])return points[0][1];
+    for(var i=1;i<points.length;i++){
+      if(tpv<=points[i][0]){
+        var lo=points[i-1],hi=points[i];
+        return lo[1]+(hi[1]-lo[1])*Math.log(tpv/lo[0])/Math.log(hi[0]/lo[0]);
+      }
+    }
+    return points[points.length-1][1];
+  }
+  function cancelLoading(){
+    loadingRun++;
+    if(loadTimer!==null){clearTimeout(loadTimer);loadTimer=null;}
+    messageTimers.forEach(function(t){clearTimeout(t);});
+    messageTimers=[];
+    $('loading-message').classList.remove('is-changing');
+    loadingStarted=0;
+    $('loading-stage').hidden=true;
+  }
+  function updateLoadingMessage(run,index){
+    if(run!==loadingRun||!document.body.classList.contains('loading'))return;
+    var el=$('loading-message');
+    el.classList.add('is-changing');
+    var next=setTimeout(function(){
+      if(run!==loadingRun||!document.body.classList.contains('loading'))return;
+      el.textContent=loadingMessages[index];
+      el.classList.remove('is-changing');
+    },180);
+    messageTimers.push(next);
+  }
+  function showForm(){
+    cancelLoading();
+    document.body.classList.remove('result','loading');
+    $('form-stage').hidden=false;$('result-stage').hidden=true;
+    $('theme-color').content='#ffffff';$('form-stage').scrollTop=0;window.scrollTo(0,0);
+    updatePricingZone();
+  }
+  function showResult(){
+    cancelLoading();
+    document.body.classList.remove('loading');
+    document.body.classList.add('result');
+    $('form-stage').hidden=true;$('result-stage').hidden=false;
+    $('theme-color').content='#000000';window.scrollTo(0,0);
+  }
+  function finishLoading(run){
+    if(run!==loadingRun||!document.body.classList.contains('loading'))return;
+    var remaining=LOADING_MS-(Date.now()-loadingStarted);
+    if(remaining>0){loadTimer=setTimeout(function(){finishLoading(run);},remaining);return;}
+    showResult();
+  }
+  function startLoading(){
+    cancelLoading();
+    loadingStarted=Date.now();
+    document.body.classList.remove('result');
+    document.body.classList.add('loading');
+    $('form-stage').hidden=true;
+    $('result-stage').hidden=true;
+    $('loading-stage').hidden=false;
+    $('loading-message').classList.remove('is-changing');
+    $('loading-message').textContent=loadingMessages[0];
+    $('theme-color').content='#000000';
+    window.scrollTo(0,0);
+    var run=loadingRun;
+    for(var i=1;i<loadingMessages.length;i++){
+      (function(index){messageTimers.push(setTimeout(function(){updateLoadingMessage(run,index);},index*LOADING_MS/loadingMessages.length));})(i);
+    }
+    loadTimer=setTimeout(function(){finishLoading(run);},LOADING_MS);
+  }
+  function sync(){
+    ['corp','intl'].forEach(function(key){
+      var v=share[key],slider=$(key+'-range');
+      $(key+'-input').value=v;
+      slider.value=v;slider.style.setProperty('--progress',v+'%');
+    });
+  }
+  function change(key,raw){
+    var v=Number(String(raw).replace(',','.'));
+    share[key]=Math.max(0,Math.min(100,Number.isFinite(v)?Math.round(v*10)/10:0));
+    var other=key==='corp'?'intl':'corp';
+    if(share.corp+share.intl>100)share[other]=Math.round((100-share[key])*10)/10;
+    sync();
+  }
+  ['corp','intl'].forEach(function(key){
+    $(key+'-range').addEventListener('input',function(e){change(key,e.target.value)});
+    $(key+'-input').addEventListener('input',function(e){change(key,e.target.value)});
+  });
+  $('period-monthly').addEventListener('click',function(){setPeriod('monthly');});
+  $('period-annual').addEventListener('click',function(){setPeriod('annual');});
+  $('amount').addEventListener('input',updateAnnualEquivalent);
+  document.querySelectorAll('[data-pricing]').forEach(function(button){
+    button.addEventListener('click',function(){selectPricing(Number(button.dataset.pricing));});
+  });
+  function selectCassa(type){
+    if(type!=='standard'&&type!=='premium')return;
+    cassaType=type;
+    document.querySelectorAll('[data-cassa]').forEach(function(button){button.setAttribute('aria-pressed',String(button.dataset.cassa===type));});
+  }
+  function updateExtra(key){
+    var qty=accessoryQty[key]||0;
+    var add=document.querySelector('[data-action="add"][data-extra="'+key+'"]');
+    var controls=document.querySelector('[data-qty-tools="'+key+'"]');
+    if(!add||!controls)return;
+    add.hidden=qty>0;
+    controls.hidden=qty===0;
+    var output=document.querySelector('[data-qty="'+key+'"]');
+    if(output)output.textContent=String(qty);
+  }
+  document.querySelectorAll('[data-cassa]').forEach(function(button){
+    button.addEventListener('click',function(){selectCassa(button.dataset.cassa);});
+  });
+  document.querySelectorAll('[data-action][data-extra]').forEach(function(button){
+    button.addEventListener('click',function(){
+      var key=button.dataset.extra,action=button.dataset.action;
+      if(!Object.prototype.hasOwnProperty.call(accessoryQty,key))return;
+      var next=accessoryQty[key];
+      if(action==='add'||action==='plus')next++;
+      else if(action==='minus')next=Math.max(0,next-1);
+      else if(action==='remove')next=0;
+      accessoryQty[key]=Math.min(99,next);
+      updateExtra(key);
+    });
+  });
+  $('calc-form').addEventListener('submit',function(e){
+    e.preventDefault();
+    var entered=parseEuro($('amount').value);
+    var tpv=period==='monthly'?entered*12:entered;
+    if(!Number.isFinite(tpv)||tpv<48000||tpv>1500000){
+      $('error').textContent=period==='monthly'
+        ?'Inserisci un transato mensile tra 4.000 € e 125.000 €.'
+        :'Inserisci un transato annuo tra 48.000 € e 1.500.000 €.';
+      $('amount').focus();return;
+    }
+    $('error').textContent='';
+    $('amount').value=euros.format(entered);
+    updateAnnualEquivalent();
+    if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();
+    var requiresCustomOffer=tpv>500000;
+    $('offer-title').textContent=requiresCustomOffer
+      ?(pricingLevel===0?'TASSO DI RIFERIMENTO PER 500.000 € ANNUI':'PROPOSTA BASATA SU 500.000 € ANNUI')
+      :'PROPOSTA COMMERCIALE';
+    $('exception-heading').textContent=requiresCustomOffer?'Proposta su misura':'Condizioni straordinarie';
+    $('exception-description').textContent=requiresCustomOffer
+      ?'Per ottenere un tasso personalizzato sul tuo transato è necessario l’intervento del responsabile commerciale.'
+      :'L’eventuale applicazione di un tasso inferiore è subordinata all’approvazione del responsabile commerciale.';
+    var posRate=base(Math.min(tpv,500000))+.5*(share.corp+share.intl)/100;
+    var cassaReferenceRate=posRate*.90;
+    var offeredRate=cassaReferenceRate*(1+pricingLevel/100);
+    $('number').textContent=fmt.format(floorRate(offeredRate));
+    var cassaPrice=cassaPrices[cassaType][pricingLevel];
+    $('result-product').textContent=cassaType==='standard'?'Cassa Standard':'Cassa Premium';
+    $('result-price').textContent=euro(cassaPrice);
+    var total=cassaPrice,rows=$('result-extras');
+    rows.replaceChildren();
+    var hasExtras=false;
+    extras.forEach(function(item){
+      var quantity=accessoryQty[item.id]||0;
+      if(!quantity)return;
+      hasExtras=true;
+      var subtotal=quantity*item.price;
+      total+=subtotal;
+      var row=document.createElement('div');
+      row.className='summary-extra';
+      var label=document.createElement('span');
+      label.textContent=item.name+' × '+quantity+' · '+euro(item.price)+'/cad.';
+      var amount=document.createElement('strong');
+      amount.textContent=euro(subtotal);
+      row.append(label,amount);
+      rows.appendChild(row);
+    });
+    if(!hasExtras){
+      var empty=document.createElement('p');
+      empty.className='no-extra';
+      empty.textContent='Nessun accessorio aggiuntivo';
+      rows.appendChild(empty);
+    }
+    $('result-total').textContent=euro(total);
+    if(history.pushState)history.pushState({result:true},'','#risultato');
+    startLoading();
+  });
+  $('back').addEventListener('click',function(){
+    if(location.hash==='#risultato')history.back();
+    else showForm();
+  });
+  addEventListener('popstate',function(){
+    if(location.hash==='#risultato'){
+      if(!document.body.classList.contains('loading')&&!document.body.classList.contains('result'))showForm();
+    }else showForm();
+  });
+  document.addEventListener('visibilitychange',function(){
+    if(!document.hidden&&document.body.classList.contains('loading')){
+      finishLoading(loadingRun);
+      if(document.body.classList.contains('loading')){
+        var index=Math.min(loadingMessages.length-1,Math.floor((Date.now()-loadingStarted)/(LOADING_MS/loadingMessages.length)));
+        var el=$('loading-message');
+        el.classList.remove('is-changing');
+        el.textContent=loadingMessages[index];
+      }
+    }
+  });
+  if(location.hash==='#risultato')history.replaceState({},'',location.pathname+location.search);
+  sync();
+  selectCassa(cassaType);
+  extras.forEach(function(item){updateExtra(item.id);});
+  scheduleViewportRefresh();
+  window.addEventListener('load',scheduleViewportRefresh);
+  window.addEventListener('pageshow',scheduleViewportRefresh);
+  window.addEventListener('resize',refreshViewport);
+  window.addEventListener('orientationchange',scheduleViewportRefresh);
+  document.addEventListener('visibilitychange',function(){
+    if(!document.hidden)scheduleViewportRefresh();
+  });
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',refreshViewport);
+    window.visualViewport.addEventListener('scroll',refreshViewport);
+  }
+})();
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').catch(function () {});
+    });
+  }
+</script>
+</body>
+</html>

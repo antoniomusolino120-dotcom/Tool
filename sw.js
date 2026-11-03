@@ -1,10 +1,11 @@
-/* Offline support for the standalone calculator and comparison. */
-const CACHE_NAME = 'confronto-pwa-v16';
+/* Offline support for comparison, POS and cash register calculators. */
+const CACHE_NAME = 'confronto-pwa-v17';
 const ASSETS = [
   '/',
   '/index.html',
   '/confronto.html',
   '/calcolatore.html',
+  '/calcolatore-cassa.html',
   '/manifest.webmanifest',
   '/icon-32.png',
   '/icon-180.png',
