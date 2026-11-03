@@ -118,10 +118,17 @@
     .cassa-page .summary-extra{padding:7px 0}
     .cassa-page .summary-extra span{min-width:0}
     .cassa-page .no-extra{margin:0 0 6px;color:#bdbdbd;font-size:14px}
-    .cassa-page .stock-section{margin:35px 0 38px}
+    .cassa-page .discount-block{margin:32px 0 24px}
+    .cassa-page .discount-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px;line-height:1.45}
+    .cassa-page .discount-label{display:inline-flex;align-items:center;gap:9px;font-weight:700;min-width:0}
+    .cassa-page .discount-label svg{width:20px;height:20px;flex:none;fill:none;stroke:#ffcc00;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .cassa-page .discount-value{font-weight:850;color:#ff7777;white-space:nowrap;font-variant-numeric:tabular-nums}
+    .cassa-page .stock-section{margin:22px 0 0}
     .cassa-page .stock-row{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 5px;font-size:15px;font-weight:650;color:#e2e2e2}
     .cassa-page .stock-count{display:inline-flex;align-items:center;justify-content:center;min-width:27px;height:27px;padding:0 5px;border-radius:50%;background:#ffcc00;color:#000;font-weight:850;font-size:13px;line-height:1;flex-shrink:0}
     .cassa-page .stock-caption{margin:0;font-size:11px;line-height:1.45;color:#aaa;text-align:center}
+    .cassa-page .old-total{display:block;margin:15px 0 3px;color:#ff7777;font-size:clamp(20px,5vw,28px);font-weight:650;text-decoration:line-through;text-decoration-thickness:2px;text-decoration-color:#ff5555;font-variant-numeric:tabular-nums}
+    .cassa-page .saving{margin:12px 0 0;color:#ffcc00;font-size:14px;font-weight:750}
     .cassa-page .total-hero{text-align:center;margin:0 0 30px}
     .cassa-page .total-heading,.cassa-page .rate-heading{text-align:center;font-size:12px;color:#d4d4d4;font-weight:750;letter-spacing:.09em}
     .cassa-page .total-hero strong{display:block;font-size:clamp(66px,10vw,90px);font-weight:850;line-height:1.08;margin-top:14px;white-space:nowrap;letter-spacing:-.075em;font-variant-numeric:tabular-nums}
@@ -282,11 +289,14 @@
         <div class="summary-label extras-title">Accessori aggiuntivi</div>
         <div id="result-extras" aria-live="polite"><p class="no-extra">Nessun accessorio aggiuntivo</p></div>
       </section>
-      <div class="stock-section">
-        <div class="stock-row" aria-live="polite"><span class="stock-count" id="stock-count">–</span><span>dispositivi rimasti in magazzino</span></div>
-        <p class="stock-caption">Disponibilità da confermare con il responsabile commerciale</p>
+      <div class="discount-block" id="discount-block" hidden>
+        <div class="discount-row"><span class="discount-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3H4a1 1 0 0 0-1 1v8l9 9 9-9-9-9Z"/><circle cx="8" cy="8" r="1.5"/></svg>Sconto disponibilità magazzino</span><strong class="discount-value" id="discount-value">−0,00 €</strong></div>
+        <div class="stock-section">
+          <div class="stock-row" aria-live="polite"><span class="stock-count" id="stock-count" hidden></span><span id="stock-label">Disponibilità di magazzino da verificare</span></div>
+          <p class="stock-caption">Disponibilità da confermare con il responsabile commerciale</p>
+        </div>
       </div>
-      <div class="total-hero"><div class="total-heading">TOTALE UNA TANTUM</div><strong id="result-total" aria-live="polite">1.500,00 €</strong></div>
+      <div class="total-hero"><div class="total-heading">TOTALE UNA TANTUM</div><span class="old-total" id="list-total" hidden>1.500,00 €</span><strong id="result-total" aria-live="polite">1.500,00 €</strong><div class="saving" id="saving" hidden></div></div>
       <div class="rate-block">
         <div class="rate-heading">TASSO PROPOSTO SUL TRANSATO</div>
         <div class="big-rate" aria-live="polite"><span id="number">0,84</span><span class="unit">%</span></div>
@@ -313,6 +323,9 @@
   var accessoryQty={tablet:0,base:0,scanner:0,comande:0,fiscale:0};
   // L'offerta Cassa e inversa al tasso POS: rosso (+20%) prezzo basso, giallo (+10%) intermedio, verde (base) prezzo alto.
   var cassaPrices={standard:{0:1990,10:1745,20:1500},premium:{0:2990,10:2490,20:1990}};
+  // Inserire qui solo conteggi confermati da magazzino. null = giacenza non verificata.
+  // Nessun numero viene inventato, né mostrato in modalità listino (verde).
+  var verifiedInventory={standard:null,premium:null};
   var extras=[{"id":"tablet","name":"Tablet aggiuntivo","price":399},{"id":"base","name":"Base di ricarica POS","price":99},{"id":"scanner","name":"Scanner","price":99},{"id":"comande","name":"Stampante per comande","price":399},{"id":"fiscale","name":"Stampante fiscale aggiuntiva","price":499}];
   var money=new Intl.NumberFormat('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
   function euro(value){return money.format(value)+' €';}
@@ -530,7 +543,21 @@
     $('number').textContent=fmt.format(floorRate(offeredRate));
     var cassaPrice=cassaPrices[cassaType][pricingLevel];
     $('result-product').textContent=cassaType==='standard'?'Cassa Standard':'Cassa Premium';
-    $('result-price').textContent=euro(cassaPrice);
+    var listPrice=cassaPrices[cassaType][0];
+    var discount=listPrice-cassaPrice;
+    var discounted=discount>0;
+    $('result-price').textContent=euro(listPrice);
+    $('discount-block').hidden=!discounted;
+    $('list-total').hidden=!discounted;
+    $('saving').hidden=!discounted;
+    if(discounted){
+      $('discount-value').textContent='−'+euro(discount);
+      var inventory=verifiedInventory[cassaType];
+      var countVerified=Number.isInteger(inventory)&&inventory>=0;
+      $('stock-count').hidden=!countVerified;
+      $('stock-count').textContent=countVerified?String(inventory):'';
+      $('stock-label').textContent=countVerified?'dispositivi rimasti in magazzino':'Disponibilità di magazzino da verificare';
+    }
     var total=cassaPrice,rows=$('result-extras');
     rows.replaceChildren();
     var hasExtras=false;
@@ -556,7 +583,11 @@
       rows.appendChild(empty);
     }
     $('result-total').textContent=euro(total);
-    $('stock-count').textContent=String(Math.floor(Math.random()*7)+1);
+    if(discounted){
+      var listTotal=total+discount;
+      $('list-total').textContent=euro(listTotal);
+      $('saving').textContent='Risparmi '+euro(discount)+' (−'+fmt.format(discount/listTotal*100)+'%)';
+    }
     if(history.pushState)history.pushState({result:true},'','#risultato');
     startLoading();
   });
