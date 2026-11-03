@@ -94,7 +94,7 @@
     .cassa-page .extra-row{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:78px;border-bottom:1px solid #ededed;padding:10px 0}
     .cassa-page .extra-info{display:flex;flex-direction:column;gap:6px;min-width:0}
     .cassa-page .extra-name{font-size:14px;font-weight:700;line-height:1.25}
-    .cassa-page .extra-price{font-size:13px;color:#555}
+    .cassa-page .extra-price{display:block;font-size:15px;font-weight:800;color:#111;line-height:1.35;font-variant-numeric:tabular-nums}
     .cassa-page .extra-actions{flex:0 0 auto}
     .cassa-page .extra-add,.cassa-page .extra-qty button{display:grid;place-items:center;min-width:38px;height:40px;padding:0 6px;border:1px solid #d2d2d2;background:#fff;border-radius:9px;color:#000;font-size:21px;font-weight:500}
     .cassa-page .extra-qty{display:flex;align-items:center;gap:5px}
@@ -211,7 +211,7 @@
         <section class="accessories" aria-label="Accessori aggiuntivi">
           <h2>Accessori aggiuntivi</h2>
           <div class="extra-row">
-            <div class="extra-info"><span class="extra-name">Tablet aggiuntivo</span><span class="extra-price">399 €</span></div>
+            <div class="extra-info"><span class="extra-name">Tablet aggiuntivo</span><span class="extra-price">399,00 € / cad.</span></div>
             <div class="extra-actions">
               <button type="button" class="extra-add" data-action="add" data-extra="tablet" aria-label="Aggiungi Tablet aggiuntivo">+</button>
               <div class="extra-qty" data-qty-tools="tablet" hidden>
@@ -223,7 +223,7 @@
             </div>
           </div>
           <div class="extra-row">
-            <div class="extra-info"><span class="extra-name">Base di ricarica POS</span><span class="extra-price">99 €</span></div>
+            <div class="extra-info"><span class="extra-name">Base di ricarica POS</span><span class="extra-price">99,00 € / cad.</span></div>
             <div class="extra-actions">
               <button type="button" class="extra-add" data-action="add" data-extra="base" aria-label="Aggiungi Base di ricarica POS">+</button>
               <div class="extra-qty" data-qty-tools="base" hidden>
@@ -235,7 +235,7 @@
             </div>
           </div>
           <div class="extra-row">
-            <div class="extra-info"><span class="extra-name">Scanner</span><span class="extra-price">99 €</span></div>
+            <div class="extra-info"><span class="extra-name">Scanner</span><span class="extra-price">99,00 € / cad.</span></div>
             <div class="extra-actions">
               <button type="button" class="extra-add" data-action="add" data-extra="scanner" aria-label="Aggiungi Scanner">+</button>
               <div class="extra-qty" data-qty-tools="scanner" hidden>
@@ -247,7 +247,7 @@
             </div>
           </div>
           <div class="extra-row">
-            <div class="extra-info"><span class="extra-name">Stampante per comande</span><span class="extra-price">399 €</span></div>
+            <div class="extra-info"><span class="extra-name">Stampante per comande</span><span class="extra-price">399,00 € / cad.</span></div>
             <div class="extra-actions">
               <button type="button" class="extra-add" data-action="add" data-extra="comande" aria-label="Aggiungi Stampante per comande">+</button>
               <div class="extra-qty" data-qty-tools="comande" hidden>
@@ -259,7 +259,7 @@
             </div>
           </div>
           <div class="extra-row">
-            <div class="extra-info"><span class="extra-name">Stampante fiscale aggiuntiva</span><span class="extra-price">499 €</span></div>
+            <div class="extra-info"><span class="extra-name">Stampante fiscale aggiuntiva</span><span class="extra-price">499,00 € / cad.</span></div>
             <div class="extra-actions">
               <button type="button" class="extra-add" data-action="add" data-extra="fiscale" aria-label="Aggiungi Stampante fiscale aggiuntiva">+</button>
               <div class="extra-qty" data-qty-tools="fiscale" hidden>
@@ -339,7 +339,7 @@
   var cassaType='standard';
   var accessoryQty={tablet:0,base:0,scanner:0,comande:0,fiscale:0};
   // L'offerta Cassa e inversa al tasso POS: rosso (+20%) prezzo basso, giallo (+10%) intermedio, verde (base) prezzo alto.
-  var cassaPrices={standard:{0:1990,10:1745,20:1500},premium:{0:2990,10:2490,20:1990}};
+  var cassaPrices={standard:{0:1995,10:1745,20:1500},premium:{0:2995,10:2490,20:1990}};
   // Numero promozionale casuale 1–7: non è un dato di inventario.
   // Viene mostrato solo nelle proposte scontate; conferma richiesta al responsabile.
   var extras=[{"id":"tablet","name":"Tablet aggiuntivo","price":399},{"id":"base","name":"Base di ricarica POS","price":99},{"id":"scanner","name":"Scanner","price":99},{"id":"comande","name":"Stampante per comande","price":399},{"id":"fiscale","name":"Stampante fiscale aggiuntiva","price":499}];
