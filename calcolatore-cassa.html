@@ -94,7 +94,10 @@
     .cassa-page .extra-row{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:78px;border-bottom:1px solid #ededed;padding:10px 0}
     .cassa-page .extra-info{display:flex;flex-direction:column;gap:6px;min-width:0}
     .cassa-page .extra-name{font-size:14px;font-weight:700;line-height:1.25}
-    .cassa-page .extra-price{display:block;font-size:13px;font-weight:650;color:#555;line-height:1.35;font-variant-numeric:tabular-nums}
+    .cassa-page .extra-name-toggle{appearance:none;border:0;background:none;padding:0;margin:0;color:inherit;font:inherit;line-height:1.25;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+    .cassa-page .extra-price{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:650;color:#555;line-height:1.35;font-variant-numeric:tabular-nums}
+    .cassa-page .extra-discount-led{display:inline-block;flex:none;width:4px;height:4px;border-radius:50%;background:#555}
+    .cassa-page .extra-discount-led[data-active="true"]{background:#000}
     .cassa-page .extra-actions{flex:0 0 auto}
     .cassa-page .extra-add,.cassa-page .extra-qty button{display:grid;place-items:center;min-width:38px;height:40px;padding:0 6px;border:1px solid #d2d2d2;background:#fff;border-radius:9px;color:#000;font-size:21px;font-weight:500}
     .cassa-page .extra-qty{display:flex;align-items:center;gap:5px}
@@ -120,6 +123,9 @@
     .cassa-page .extras-title{margin-top:23px}
     .cassa-page .summary-extra{padding:7px 0}
     .cassa-page .summary-extra span{min-width:0}
+    .cassa-page .summary-extra-discounted{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;font-variant-numeric:tabular-nums}
+    .cassa-page .summary-extra-discounted .summary-original-price{font-size:13px;color:#ff7777;text-decoration:line-through;text-decoration-color:#ff5555;text-decoration-thickness:2px}
+    .cassa-page .summary-extra-discounted strong{font-weight:850}
     .cassa-page .summary-accessory-total{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:20px 0 10px;font-size:14px;font-weight:750}
     .cassa-page .summary-accessory-total strong{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:850}
     .cassa-page .summary-accessory-discount{margin:0 0 8px}
@@ -211,7 +217,7 @@
         <section class="accessories" aria-label="Accessori aggiuntivi">
           <h2>Accessori aggiuntivi</h2>
           <div class="extra-row">
-            <div class="extra-info"><span class="extra-name">Tablet aggiuntivo</span><span class="extra-price">399,00 €</span></div>
+            <div class="extra-info"><button type="button" class="extra-name-toggle" data-discount-extra="tablet" aria-label="Attiva sconto Tablet aggiuntivo" aria-pressed="false"><span class="extra-name">Tablet aggiuntivo</span></button><span class="extra-price"><span class="extra-discount-led" data-discount-led="tablet" data-active="false" aria-hidden="true"></span>399,00 €</span></div>
             <div class="extra-actions">
               <button type="button" class="extra-add" data-action="add" data-extra="tablet" aria-label="Aggiungi Tablet aggiuntivo">+</button>
               <div class="extra-qty" data-qty-tools="tablet" hidden>
@@ -223,7 +229,7 @@
             </div>
           </div>
           <div class="extra-row">
-            <div class="extra-info"><span class="extra-name">Base di ricarica POS</span><span class="extra-price">99,00 €</span></div>
+            <div class="extra-info"><button type="button" class="extra-name-toggle" data-discount-extra="base" aria-label="Attiva sconto Base di ricarica POS" aria-pressed="false"><span class="extra-name">Base di ricarica POS</span></button><span class="extra-price"><span class="extra-discount-led" data-discount-led="base" data-active="false" aria-hidden="true"></span>99,00 €</span></div>
             <div class="extra-actions">
               <button type="button" class="extra-add" data-action="add" data-extra="base" aria-label="Aggiungi Base di ricarica POS">+</button>
               <div class="extra-qty" data-qty-tools="base" hidden>
@@ -235,7 +241,7 @@
             </div>
           </div>
           <div class="extra-row">
-            <div class="extra-info"><span class="extra-name">Scanner</span><span class="extra-price">99,00 €</span></div>
+            <div class="extra-info"><button type="button" class="extra-name-toggle" data-discount-extra="scanner" aria-label="Attiva sconto Scanner" aria-pressed="false"><span class="extra-name">Scanner</span></button><span class="extra-price"><span class="extra-discount-led" data-discount-led="scanner" data-active="false" aria-hidden="true"></span>99,00 €</span></div>
             <div class="extra-actions">
               <button type="button" class="extra-add" data-action="add" data-extra="scanner" aria-label="Aggiungi Scanner">+</button>
               <div class="extra-qty" data-qty-tools="scanner" hidden>
@@ -247,7 +253,7 @@
             </div>
           </div>
           <div class="extra-row">
-            <div class="extra-info"><span class="extra-name">Stampante per comande</span><span class="extra-price">399,00 €</span></div>
+            <div class="extra-info"><button type="button" class="extra-name-toggle" data-discount-extra="comande" aria-label="Attiva sconto Stampante per comande" aria-pressed="false"><span class="extra-name">Stampante per comande</span></button><span class="extra-price"><span class="extra-discount-led" data-discount-led="comande" data-active="false" aria-hidden="true"></span>399,00 €</span></div>
             <div class="extra-actions">
               <button type="button" class="extra-add" data-action="add" data-extra="comande" aria-label="Aggiungi Stampante per comande">+</button>
               <div class="extra-qty" data-qty-tools="comande" hidden>
@@ -259,7 +265,7 @@
             </div>
           </div>
           <div class="extra-row">
-            <div class="extra-info"><span class="extra-name">Stampante fiscale aggiuntiva</span><span class="extra-price">499,00 €</span></div>
+            <div class="extra-info"><button type="button" class="extra-name-toggle" data-discount-extra="fiscale" aria-label="Attiva sconto Stampante fiscale aggiuntiva" aria-pressed="false"><span class="extra-name">Stampante fiscale aggiuntiva</span></button><span class="extra-price"><span class="extra-discount-led" data-discount-led="fiscale" data-active="false" aria-hidden="true"></span>499,00 €</span></div>
             <div class="extra-actions">
               <button type="button" class="extra-add" data-action="add" data-extra="fiscale" aria-label="Aggiungi Stampante fiscale aggiuntiva">+</button>
               <div class="extra-qty" data-qty-tools="fiscale" hidden>
@@ -336,6 +342,7 @@
   var period='annual';
   var pricingLevel=0;
   var accessoryPromo=false;
+  var accessoryDiscounts={tablet:false,base:false,scanner:false,comande:false,fiscale:false};
   var cassaType='standard';
   var accessoryQty={tablet:0,base:0,scanner:0,comande:0,fiscale:0};
   // L'offerta Cassa e inversa al tasso POS: rosso (+20%) prezzo basso, giallo (+10%) intermedio, verde (base) prezzo alto.
@@ -516,6 +523,24 @@
     cassaType=type;
     document.querySelectorAll('[data-cassa]').forEach(function(button){button.setAttribute('aria-pressed',String(button.dataset.cassa===type));});
   }
+  function updateAccessoryDiscount(key){
+    var on=!!accessoryDiscounts[key];
+    var toggle=document.querySelector('[data-discount-extra="'+key+'"]');
+    var led=document.querySelector('[data-discount-led="'+key+'"]');
+    if(toggle){
+      toggle.setAttribute('aria-pressed',String(on));
+      toggle.setAttribute('aria-label',(on?'Rimuovi sconto ':'Attiva sconto ')+toggle.querySelector('.extra-name').textContent);
+    }
+    if(led)led.dataset.active=String(on);
+  }
+  document.querySelectorAll('[data-discount-extra]').forEach(function(button){
+    button.addEventListener('click',function(){
+      var key=button.dataset.discountExtra;
+      if(!Object.prototype.hasOwnProperty.call(accessoryDiscounts,key))return;
+      accessoryDiscounts[key]=!accessoryDiscounts[key];
+      updateAccessoryDiscount(key);
+    });
+  });
   function updateExtra(key){
     var qty=accessoryQty[key]||0;
     var add=document.querySelector('[data-action="add"][data-extra="'+key+'"]');
@@ -574,7 +599,7 @@
       $('discount-value').textContent='−'+euro(discount);
       $('stock-count').textContent=String(Math.floor(Math.random()*7)+1);
     }
-    var total=cassaPrice,accessorySubtotal=0,rows=$('result-extras');
+    var total=cassaPrice,accessorySubtotal=0,individualDiscountSubtotal=0,rows=$('result-extras');
     rows.replaceChildren();
     var hasExtras=false;
     extras.forEach(function(item){
@@ -583,14 +608,28 @@
       hasExtras=true;
       var subtotal=quantity*item.price;
       accessorySubtotal+=subtotal;
-      if(!accessoryPromo)total+=subtotal;
+      var discountedIndividually=!accessoryPromo&&!!accessoryDiscounts[item.id];
+      if(discountedIndividually)individualDiscountSubtotal+=subtotal;
+      else if(!accessoryPromo)total+=subtotal;
       var row=document.createElement('div');
       row.className='summary-extra';
       var label=document.createElement('span');
       label.textContent=item.name+' × '+quantity+' · '+euro(item.price)+'/cad.';
-      var amount=document.createElement('strong');
-      amount.textContent=euro(subtotal);
-      row.append(label,amount);
+      if(discountedIndividually){
+        var discountedAmount=document.createElement('span');
+        discountedAmount.className='summary-extra-discounted';
+        var original=document.createElement('span');
+        original.className='summary-original-price';
+        original.textContent=euro(subtotal);
+        var free=document.createElement('strong');
+        free.textContent=euro(0);
+        discountedAmount.append(original,free);
+        row.append(label,discountedAmount);
+      }else{
+        var amount=document.createElement('strong');
+        amount.textContent=euro(subtotal);
+        row.append(label,amount);
+      }
       rows.appendChild(row);
     });
     if(!hasExtras){
@@ -601,7 +640,7 @@
     }
     $('accessory-total').hidden=!hasExtras;
     if(hasExtras)$('accessory-total-value').textContent=euro(accessorySubtotal);
-    var accessoryDiscount=accessoryPromo?accessorySubtotal:0;
+    var accessoryDiscount=accessoryPromo?accessorySubtotal:individualDiscountSubtotal;
     $('accessory-discount').hidden=accessoryDiscount===0;
     if(accessoryDiscount>0)$('accessory-discount-value').textContent='−'+euro(accessoryDiscount);
     $('result-total').textContent=euro(total);
@@ -639,7 +678,7 @@
   if(location.hash==='#risultato')history.replaceState({},'',location.pathname+location.search);
   sync();
   selectCassa(cassaType);
-  extras.forEach(function(item){updateExtra(item.id);});
+  extras.forEach(function(item){updateExtra(item.id);updateAccessoryDiscount(item.id);});
   scheduleViewportRefresh();
   window.addEventListener('load',scheduleViewportRefresh);
   window.addEventListener('pageshow',scheduleViewportRefresh);
