@@ -106,10 +106,10 @@
     .cassa-page .pricing-selection button{pointer-events:auto;min-height:180px}
     .cassa-page .result-stage{display:block;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:82px 22px 56px}
     .cassa-page .result-content{align-items:stretch;text-align:left;width:min(100%,580px);margin:0 auto}
-    .cassa-page .offer-title{text-align:center;margin-bottom:12px;font-size:12px}
-    .cassa-page .summary-heading{color:#fff;text-align:center;font-size:clamp(20px,4vw,28px);margin:0 0 28px;font-weight:850;letter-spacing:-.04em}
     .cassa-page .summary-card{border-top:1px solid #555;border-bottom:1px solid #555;padding:22px 0 16px}
-    .cassa-page .summary-product{font-size:25px;font-weight:800;letter-spacing:-.035em;margin-bottom:24px}
+    .cassa-page .summary-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+    .cassa-page .summary-product{font-size:25px;font-weight:800;letter-spacing:-.035em}
+    .cassa-page .summary-price{font-size:22px;font-weight:850;letter-spacing:-.04em;white-space:nowrap;font-variant-numeric:tabular-nums}
     .cassa-page .summary-line,.cassa-page .summary-extra{display:flex;align-items:baseline;justify-content:space-between;gap:16px;font-size:15px;line-height:1.5}
     .cassa-page .summary-line strong,.cassa-page .summary-extra strong{font-weight:800;white-space:nowrap}
     .cassa-page .summary-label{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:#a9a9a9;font-weight:750;margin:24px 0 9px}
@@ -118,16 +118,17 @@
     .cassa-page .summary-extra{padding:7px 0}
     .cassa-page .summary-extra span{min-width:0}
     .cassa-page .no-extra{margin:0 0 6px;color:#bdbdbd;font-size:14px}
-    .cassa-page .total-row{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:28px 0 12px}
-    .cassa-page .stock-row{display:flex;align-items:center;gap:10px;margin:0 0 5px;font-size:13px;color:#d1d1d1}
+    .cassa-page .stock-section{margin:27px 0 29px}
+    .cassa-page .stock-row{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 5px;font-size:13px;color:#d1d1d1}
     .cassa-page .stock-count{display:inline-flex;align-items:center;justify-content:center;min-width:27px;height:27px;padding:0 5px;border-radius:50%;background:#ffcc00;color:#000;font-weight:850;font-size:13px;line-height:1;flex-shrink:0}
-    .cassa-page .stock-caption{margin:0 0 38px 37px;font-size:12px;line-height:1.45;color:#aaa}
-    .cassa-page .total-row span{font-size:13px;font-weight:800;letter-spacing:.025em}
-    .cassa-page .total-row strong{font-weight:900;font-size:clamp(25px,7vw,39px);white-space:nowrap;letter-spacing:-.055em}
-    .cassa-page .rate-heading{text-align:center;font-size:12px;color:#d4d4d4;font-weight:750;letter-spacing:.09em}
-    .cassa-page .big-rate{justify-content:center;margin:14px 0 35px}
-    .cassa-page .big-rate #number{font-size:clamp(66px,15vw,120px)}
-    .cassa-page .big-rate .unit{font-size:clamp(46px,10vw,90px)}
+    .cassa-page .stock-caption{margin:0;font-size:12px;line-height:1.45;color:#aaa;text-align:center}
+    .cassa-page .total-hero{text-align:center;margin:0 0 30px}
+    .cassa-page .total-heading,.cassa-page .rate-heading{text-align:center;font-size:12px;color:#d4d4d4;font-weight:750;letter-spacing:.09em}
+    .cassa-page .total-hero strong{display:block;font-size:clamp(44px,11.5vw,92px);font-weight:850;line-height:1.08;margin-top:14px;white-space:nowrap;letter-spacing:-.075em;font-variant-numeric:tabular-nums}
+    .cassa-page .rate-block{text-align:center;margin:0 0 36px}
+    .cassa-page .big-rate{justify-content:center;margin:10px 0 0}
+    .cassa-page .big-rate #number{font-size:clamp(30px,7vw,58px)}
+    .cassa-page .big-rate .unit{font-size:clamp(25px,6vw,49px)}
     .cassa-page .exception{text-align:center;align-self:center;padding-bottom:28px}
     .cassa-page .back{position:absolute;top:20px;left:20px;width:46px;height:46px;z-index:3}
     @media(max-width:500px){
@@ -140,7 +141,9 @@
       .cassa-page .extra-qty{gap:3px}
       .cassa-page .extra-qty .trash{margin-left:2px}
       .cassa-page .result-stage{padding:78px 20px 42px}
-      .cassa-page .total-row{align-items:flex-start;flex-direction:column;gap:10px}
+      .cassa-page .summary-product{font-size:22px}
+      .cassa-page .summary-price{font-size:19px}
+      .cassa-page .total-hero strong{font-size:clamp(39px,11.5vw,56px)}
     }
     @media(max-height:700px){
       .cassa-page .form-stage{padding-top:12px;padding-bottom:0}
@@ -271,21 +274,22 @@
   <main class="result-stage" id="result-stage" hidden aria-label="Preventivo cassa">
     <button class="back" type="button" id="back" aria-label="Torna alla configurazione"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7M7 12h13"/></svg></button>
     <div class="result-content">
-      <div class="offer-title" id="offer-title">LA TUA OFFERTA</div>
-      <h2 class="summary-heading">PREVENTIVO CASSA</h2>
       <section class="summary-card" aria-label="Dettaglio cassa">
-        <div class="summary-product" id="result-product">Cassa Standard</div>
-        <div class="summary-line"><span>Cassa</span><strong id="result-price">1.500,00 €</strong></div>
+        <div class="summary-top"><div class="summary-product" id="result-product">Cassa Standard</div><strong class="summary-price" id="result-price">1.500,00 €</strong></div>
         <div class="summary-label">Dotazione inclusa</div>
         <p class="summary-included">Stampante fiscale · Cassetto · Modulo fatture</p>
         <div class="summary-label extras-title">Accessori aggiuntivi</div>
         <div id="result-extras" aria-live="polite"><p class="no-extra">Nessun accessorio aggiuntivo</p></div>
       </section>
-      <div class="total-row"><span>TOTALE UNA TANTUM</span><strong id="result-total">1.500,00 €</strong></div>
-      <div class="stock-row" aria-live="polite"><span class="stock-count" id="stock-count">–</span><span>dispositivi rimasti in magazzino</span></div>
-      <p class="stock-caption">(Disponibilità da confermare con il responsabile commerciale)</p>
-      <div class="rate-heading">TASSO PROPOSTO SUL TRANSATO</div>
-      <div class="big-rate" aria-live="polite"><span id="number">0,84</span><span class="unit">%</span></div>
+      <div class="stock-section">
+        <div class="stock-row" aria-live="polite"><span class="stock-count" id="stock-count">–</span><span>dispositivi rimasti in magazzino</span></div>
+        <p class="stock-caption">(Disponibilità da confermare con il responsabile commerciale)</p>
+      </div>
+      <div class="total-hero"><div class="total-heading">TOTALE UNA TANTUM</div><strong id="result-total" aria-live="polite">1.500,00 €</strong></div>
+      <div class="rate-block">
+        <div class="rate-heading">TASSO PROPOSTO SUL TRANSATO</div>
+        <div class="big-rate" aria-live="polite"><span id="number">0,84</span><span class="unit">%</span></div>
+      </div>
       <section class="exception" aria-label="Condizioni commerciali">
         <div class="exception-title">
           <svg class="exception-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20 6v5.4c0 4.9-3.3 8.2-8 10.1-4.7-1.9-8-5.2-8-10.1V6l8-3.5Z"/><path d="m8.7 12 2.4 2.4 4.5-4.8"/></svg>
@@ -515,9 +519,6 @@
     updateAnnualEquivalent();
     if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();
     var requiresCustomOffer=tpv>500000;
-    $('offer-title').textContent=requiresCustomOffer
-      ?(pricingLevel===0?'TASSO DI RIFERIMENTO PER 500.000 € ANNUI':'PROPOSTA BASATA SU 500.000 € ANNUI')
-      :'PROPOSTA COMMERCIALE';
     $('exception-heading').textContent=requiresCustomOffer?'Proposta su misura':'Condizioni straordinarie';
     $('exception-description').textContent='L’eventuale applicazione di un tasso o di un prezzo inferiore è subordinata all’approvazione del responsabile commerciale.'
       +(requiresCustomOffer?' Per transati superiori a 500.000 € annui, il tasso personalizzato richiede il confronto con il responsabile commerciale.':'');
