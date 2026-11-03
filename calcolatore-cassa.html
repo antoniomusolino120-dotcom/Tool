@@ -123,6 +123,8 @@
     .cassa-page .extras-title{margin-top:23px}
     .cassa-page .summary-extra{padding:7px 0}
     .cassa-page .summary-extra span{min-width:0}
+    .cassa-page .summary-extra-label{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .cassa-page .summary-extra-label svg{display:inline-block;width:13px;height:13px;flex:none;fill:none;stroke:#ffcc00;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
     .cassa-page .summary-accessory-total{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:20px 0 10px;font-size:14px;font-weight:750}
     .cassa-page .summary-accessory-total strong{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:850}
     .cassa-page .summary-accessory-discount{margin:0 0 8px}
@@ -612,6 +614,11 @@
       row.className='summary-extra';
       var label=document.createElement('span');
       label.textContent=item.name+' × '+quantity;
+      if(discountedIndividually){
+        label.className='summary-extra-label';
+        // Stessa identica iconcina di "Sconto accessori", in miniatura.
+        label.appendChild($('accessory-discount').querySelector('svg').cloneNode(true));
+      }
       var amount=document.createElement('strong');
       amount.textContent=euro(subtotal);
       row.append(label,amount);
