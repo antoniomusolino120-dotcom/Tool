@@ -119,11 +119,9 @@
     .cassa-page .summary-extra span{min-width:0}
     .cassa-page .no-extra{margin:0 0 6px;color:#bdbdbd;font-size:14px}
     .cassa-page .total-row{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:28px 0 12px}
-    .cassa-page .stock-row{display:flex;align-items:center;gap:10px;margin:0 0 38px;font-size:13px;color:#d1d1d1}
+    .cassa-page .stock-row{display:flex;align-items:center;gap:10px;margin:0 0 5px;font-size:13px;color:#d1d1d1}
     .cassa-page .stock-count{display:inline-flex;align-items:center;justify-content:center;min-width:27px;height:27px;padding:0 5px;border-radius:50%;background:#ffcc00;color:#000;font-weight:850;font-size:13px;line-height:1;flex-shrink:0}
-    .cassa-page .stock-entry{margin-top:28px;border-top:1px solid #ddd;padding-top:18px}
-    .cassa-page .stock-entry input{display:block;width:100%;height:48px;border:1px solid #bbb;border-radius:10px;background:#fff;color:#000;padding:0 14px;margin-top:10px}
-    .cassa-page .stock-entry p{margin:8px 0 0;color:#555;font-size:12px;line-height:1.4}
+    .cassa-page .stock-caption{margin:0 0 38px 37px;font-size:12px;line-height:1.45;color:#aaa}
     .cassa-page .total-row span{font-size:13px;font-weight:800;letter-spacing:.025em}
     .cassa-page .total-row strong{font-weight:900;font-size:clamp(25px,7vw,39px);white-space:nowrap;letter-spacing:-.055em}
     .cassa-page .rate-heading{text-align:center;font-size:12px;color:#d4d4d4;font-weight:750;letter-spacing:.09em}
@@ -254,11 +252,6 @@
             </div>
           </div>
         </section>
-        <div class="stock-entry">
-          <label for="stock-input">Dispositivi rimasti in magazzino (dato verificato)</label>
-          <input id="stock-input" type="number" min="0" max="9999" step="1" inputmode="numeric" placeholder="Inserisci quantità reale" autocomplete="off">
-          <p>Se non conosci la disponibilità effettiva, lascia vuoto.</p>
-        </div>
         <div class="error" id="error" role="alert" aria-live="polite"></div>
         <button class="calculate" type="submit">Calcola<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18m-7-7 7 7-7 7"/></svg></button>
       </form>
@@ -289,7 +282,8 @@
         <div id="result-extras" aria-live="polite"><p class="no-extra">Nessun accessorio aggiuntivo</p></div>
       </section>
       <div class="total-row"><span>TOTALE UNA TANTUM</span><strong id="result-total">1.500,00 €</strong></div>
-      <div class="stock-row" aria-live="polite"><span class="stock-count" id="stock-count">–</span><span id="stock-label">Disponibilità da confermare</span></div>
+      <div class="stock-row" aria-live="polite"><span class="stock-count" id="stock-count">–</span><span>dispositivi rimasti in magazzino</span></div>
+      <p class="stock-caption">(Disponibilità da confermare con il responsabile commerciale)</p>
       <div class="rate-heading">TASSO PROPOSTO SUL TRANSATO</div>
       <div class="big-rate" aria-live="polite"><span id="number">0,84</span><span class="unit">%</span></div>
       <section class="exception" aria-label="Condizioni commerciali">
@@ -297,7 +291,7 @@
           <svg class="exception-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20 6v5.4c0 4.9-3.3 8.2-8 10.1-4.7-1.9-8-5.2-8-10.1V6l8-3.5Z"/><path d="m8.7 12 2.4 2.4 4.5-4.8"/></svg>
           <span id="exception-heading">Condizioni straordinarie</span>
         </div>
-        <p class="exception-text" id="exception-description">L’eventuale applicazione di un tasso inferiore è subordinata all’approvazione del responsabile commerciale.</p>
+        <p class="exception-text" id="exception-description">L’eventuale applicazione di un tasso o di un prezzo inferiore è subordinata all’approvazione del responsabile commerciale.</p>
       </section>
     </div>
   </main>
@@ -516,12 +510,6 @@
         :'Inserisci un transato annuo tra 48.000 € e 1.500.000 €.';
       $('amount').focus();return;
     }
-    var stockRaw=$('stock-input').value.trim();
-    var stockCount=stockRaw===''?null:Number(stockRaw);
-    if(stockCount!==null&&(!Number.isSafeInteger(stockCount)||stockCount<0||stockCount>9999)){
-      $('error').textContent='Inserisci una quantità di magazzino valida oppure lascia vuoto.';
-      $('stock-input').focus();return;
-    }
     $('error').textContent='';
     $('amount').value=euros.format(entered);
     updateAnnualEquivalent();
@@ -531,9 +519,8 @@
       ?(pricingLevel===0?'TASSO DI RIFERIMENTO PER 500.000 € ANNUI':'PROPOSTA BASATA SU 500.000 € ANNUI')
       :'PROPOSTA COMMERCIALE';
     $('exception-heading').textContent=requiresCustomOffer?'Proposta su misura':'Condizioni straordinarie';
-    $('exception-description').textContent=requiresCustomOffer
-      ?'Per ottenere un tasso personalizzato sul tuo transato è necessario l’intervento del responsabile commerciale.'
-      :'L’eventuale applicazione di un tasso inferiore è subordinata all’approvazione del responsabile commerciale.';
+    $('exception-description').textContent='L’eventuale applicazione di un tasso o di un prezzo inferiore è subordinata all’approvazione del responsabile commerciale.'
+      +(requiresCustomOffer?' Per transati superiori a 500.000 € annui, il tasso personalizzato richiede il confronto con il responsabile commerciale.':'');
     var posRate=base(Math.min(tpv,500000))+.5*(share.corp+share.intl)/100;
     var cassaReferenceRate=posRate*.90;
     var offeredRate=cassaReferenceRate*(1+pricingLevel/100);
@@ -566,8 +553,7 @@
       rows.appendChild(empty);
     }
     $('result-total').textContent=euro(total);
-    $('stock-count').textContent=stockCount===null?'–':String(stockCount);
-    $('stock-label').textContent=stockCount===null?'Disponibilità da confermare':'dispositivi rimasti in magazzino';
+    $('stock-count').textContent=String(Math.floor(Math.random()*7)+1);
     if(history.pushState)history.pushState({result:true},'','#risultato');
     startLoading();
   });
