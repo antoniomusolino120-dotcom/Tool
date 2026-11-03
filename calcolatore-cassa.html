@@ -107,9 +107,9 @@
     .cassa-page .result-stage{display:block;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:82px 22px 56px}
     .cassa-page .result-content{align-items:stretch;text-align:left;width:min(100%,580px);margin:0 auto}
     .cassa-page .summary-card{border-top:1px solid #555;border-bottom:1px solid #555;padding:22px 0 16px}
-    .cassa-page .summary-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:24px}
-    .cassa-page .summary-product{font-size:25px;font-weight:800;letter-spacing:-.035em}
-    .cassa-page .summary-price{font-size:22px;font-weight:850;letter-spacing:-.04em;white-space:nowrap;font-variant-numeric:tabular-nums}
+    .cassa-page .summary-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:nowrap;margin-bottom:24px}
+    .cassa-page .summary-product{font-size:clamp(20px,3.6vw,25px);font-weight:800;letter-spacing:-.035em;min-width:0}
+    .cassa-page .summary-price{font-size:clamp(20px,3.6vw,25px);font-weight:800;letter-spacing:-.035em;white-space:nowrap;font-variant-numeric:tabular-nums}
     .cassa-page .summary-line,.cassa-page .summary-extra{display:flex;align-items:baseline;justify-content:space-between;gap:16px;font-size:15px;line-height:1.5}
     .cassa-page .summary-line strong,.cassa-page .summary-extra strong{font-weight:800;white-space:nowrap}
     .cassa-page .summary-label{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:#a9a9a9;font-weight:750;margin:24px 0 9px}
@@ -119,16 +119,16 @@
     .cassa-page .summary-extra span{min-width:0}
     .cassa-page .no-extra{margin:0 0 6px;color:#bdbdbd;font-size:14px}
     .cassa-page .stock-section{margin:27px 0 29px}
-    .cassa-page .stock-row{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 5px;font-size:13px;color:#d1d1d1}
+    .cassa-page .stock-row{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 5px;font-size:15px;font-weight:650;color:#e2e2e2}
     .cassa-page .stock-count{display:inline-flex;align-items:center;justify-content:center;min-width:27px;height:27px;padding:0 5px;border-radius:50%;background:#ffcc00;color:#000;font-weight:850;font-size:13px;line-height:1;flex-shrink:0}
-    .cassa-page .stock-caption{margin:0;font-size:12px;line-height:1.45;color:#aaa;text-align:center}
+    .cassa-page .stock-caption{margin:0;font-size:11px;line-height:1.45;color:#aaa;text-align:center}
     .cassa-page .total-hero{text-align:center;margin:0 0 30px}
     .cassa-page .total-heading,.cassa-page .rate-heading{text-align:center;font-size:12px;color:#d4d4d4;font-weight:750;letter-spacing:.09em}
-    .cassa-page .total-hero strong{display:block;font-size:clamp(44px,11.5vw,92px);font-weight:850;line-height:1.08;margin-top:14px;white-space:nowrap;letter-spacing:-.075em;font-variant-numeric:tabular-nums}
+    .cassa-page .total-hero strong{display:block;font-size:clamp(66px,10vw,90px);font-weight:850;line-height:1.08;margin-top:14px;white-space:nowrap;letter-spacing:-.075em;font-variant-numeric:tabular-nums}
     .cassa-page .rate-block{text-align:center;margin:0 0 36px}
     .cassa-page .big-rate{justify-content:center;margin:10px 0 0}
-    .cassa-page .big-rate #number{font-size:clamp(30px,7vw,58px)}
-    .cassa-page .big-rate .unit{font-size:clamp(25px,6vw,49px)}
+    .cassa-page .big-rate #number{font-size:clamp(29px,5.5vw,45px)}
+    .cassa-page .big-rate .unit{font-size:clamp(24px,4vw,37px)}
     .cassa-page .exception{text-align:center;align-self:center;padding-bottom:28px}
     .cassa-page .back{position:absolute;top:20px;left:20px;width:46px;height:46px;z-index:3}
     @media(max-width:500px){
@@ -141,9 +141,10 @@
       .cassa-page .extra-qty{gap:3px}
       .cassa-page .extra-qty .trash{margin-left:2px}
       .cassa-page .result-stage{padding:78px 20px 42px}
-      .cassa-page .summary-product{font-size:22px}
-      .cassa-page .summary-price{font-size:19px}
-      .cassa-page .total-hero strong{font-size:clamp(39px,11.5vw,56px)}
+      .cassa-page .summary-product,.cassa-page .summary-price{font-size:clamp(18px,5.8vw,22px)}
+      .cassa-page .total-hero strong{font-size:clamp(47px,14vw,66px)}
+      .cassa-page .big-rate #number{font-size:clamp(29px,8vw,39px)}
+      .cassa-page .big-rate .unit{font-size:clamp(23px,6.2vw,32px)}
     }
     @media(max-height:700px){
       .cassa-page .form-stage{padding-top:12px;padding-bottom:0}
@@ -259,7 +260,7 @@
         <button class="calculate" type="submit">Calcola<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18m-7-7 7 7-7 7"/></svg></button>
       </form>
     </div>
-    <div class="pricing-selection" id="pricing-selection" role="group" aria-label="Modalità della proposta commerciale">
+    <div class="pricing-selection" id="pricing-selection" role="group" aria-label="Livello tariffario">
       <button type="button" data-pricing="20" aria-label="Proposta maggiorata del 20 percento" aria-pressed="false"></button>
       <button type="button" data-pricing="10" aria-label="Proposta maggiorata del 10 percento" aria-pressed="false"></button>
       <button type="button" data-pricing="0" aria-label="Proposta base" aria-pressed="true"></button>
@@ -271,7 +272,7 @@
       <div class="loading-message" id="loading-message" aria-live="off">Stiamo calcolando il tuo tasso…</div>
     </div>
   </div>
-  <main class="result-stage" id="result-stage" hidden aria-label="Preventivo cassa">
+  <main class="result-stage" id="result-stage" hidden aria-label="Riepilogo cassa">
     <button class="back" type="button" id="back" aria-label="Torna alla configurazione"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7M7 12h13"/></svg></button>
     <div class="result-content">
       <section class="summary-card" aria-label="Dettaglio cassa">
@@ -283,7 +284,7 @@
       </section>
       <div class="stock-section">
         <div class="stock-row" aria-live="polite"><span class="stock-count" id="stock-count">–</span><span>dispositivi rimasti in magazzino</span></div>
-        <p class="stock-caption">(Disponibilità da confermare con il responsabile commerciale)</p>
+        <p class="stock-caption">Disponibilità da confermare con il responsabile commerciale</p>
       </div>
       <div class="total-hero"><div class="total-heading">TOTALE UNA TANTUM</div><strong id="result-total" aria-live="polite">1.500,00 €</strong></div>
       <div class="rate-block">
