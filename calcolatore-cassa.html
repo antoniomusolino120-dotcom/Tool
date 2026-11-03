@@ -294,7 +294,7 @@
       <div class="discount-block" id="discount-block" hidden>
         <div class="discount-row"><span class="discount-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3H4a1 1 0 0 0-1 1v8l9 9 9-9-9-9Z"/><circle cx="8" cy="8" r="1.5"/></svg>Sconto disponibilità magazzino</span><strong class="discount-value" id="discount-value">−0,00 €</strong></div>
         <div class="stock-section">
-          <div class="stock-row" aria-live="polite"><span class="stock-count" id="stock-count" hidden></span><span id="stock-label">Disponibilità di magazzino da verificare</span></div>
+          <div class="stock-row" aria-live="polite"><span class="stock-count" id="stock-count">–</span><span id="stock-label">dispositivi rimasti in magazzino</span></div>
           <p class="stock-caption">Disponibilità da confermare con il responsabile commerciale</p>
         </div>
       </div>
@@ -325,9 +325,8 @@
   var accessoryQty={tablet:0,base:0,scanner:0,comande:0,fiscale:0};
   // L'offerta Cassa e inversa al tasso POS: rosso (+20%) prezzo basso, giallo (+10%) intermedio, verde (base) prezzo alto.
   var cassaPrices={standard:{0:1990,10:1745,20:1500},premium:{0:2990,10:2490,20:1990}};
-  // Inserire qui solo conteggi confermati da magazzino. null = giacenza non verificata.
-  // Nessun numero viene inventato, né mostrato in modalità listino (verde).
-  var verifiedInventory={standard:null,premium:null};
+  // Numero promozionale casuale 1–7: non è un dato di inventario.
+  // Viene mostrato solo nelle proposte scontate; conferma richiesta al responsabile.
   var extras=[{"id":"tablet","name":"Tablet aggiuntivo","price":399},{"id":"base","name":"Base di ricarica POS","price":99},{"id":"scanner","name":"Scanner","price":99},{"id":"comande","name":"Stampante per comande","price":399},{"id":"fiscale","name":"Stampante fiscale aggiuntiva","price":499}];
   var money=new Intl.NumberFormat('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
   function euro(value){return money.format(value)+' €';}
@@ -554,11 +553,7 @@
     $('saving').hidden=!discounted;
     if(discounted){
       $('discount-value').textContent='−'+euro(discount);
-      var inventory=verifiedInventory[cassaType];
-      var countVerified=Number.isInteger(inventory)&&inventory>=0;
-      $('stock-count').hidden=!countVerified;
-      $('stock-count').textContent=countVerified?String(inventory):'';
-      $('stock-label').textContent=countVerified?'dispositivi rimasti in magazzino':'Disponibilità di magazzino da verificare';
+      $('stock-count').textContent=String(Math.floor(Math.random()*7)+1);
     }
     var total=cassaPrice,rows=$('result-extras');
     rows.replaceChildren();
