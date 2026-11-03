@@ -311,7 +311,7 @@
   var money=new Intl.NumberFormat('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
   function euro(value){return money.format(value)+' €';}
   var LOADING_MS=15000;
-  var loadingMessages=['Stiamo calcolando il tuo tasso…','Analizziamo il tuo transato annuo…','Valutiamo la composizione delle carte…','Stiamo preparando la tua offerta…'];
+  var loadingMessages=['Stiamo calcolando il tuo tasso…','Analizziamo il tuo transato annuo…','Valutiamo le giacenze in magazzino…','Stiamo preparando la tua offerta…'];
   var messageTimers=[];
   var loadTimer=null;
   var loadingStarted=0;
